@@ -1,0 +1,517 @@
+{
+  "orders": [
+    [
+      1,
+      2,
+      4
+    ],
+    [
+      4,
+      2,
+      1
+    ]
+  ],
+  "tasks": [
+    {
+      "id": "reg-00",
+      "kind": "regression",
+      "modules": [
+        "test_gzip",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-01",
+      "kind": "regression",
+      "modules": [
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3"
+      ]
+    },
+    {
+      "id": "reg-02",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics"
+      ]
+    },
+    {
+      "id": "reg-03",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-04",
+      "kind": "regression",
+      "modules": [
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_sqlite3",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-05",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_functools",
+        "test_gzip",
+        "test_lzma",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-06",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-07",
+      "kind": "regression",
+      "modules": [
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-08",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_functools",
+        "test_gzip",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3"
+      ]
+    },
+    {
+      "id": "reg-09",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_itertools",
+        "test_lzma",
+        "test_sqlite3",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-10",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-11",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-12",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_decimal",
+        "test_functools",
+        "test_itertools",
+        "test_re",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-13",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-14",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-15",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-16",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_decimal",
+        "test_lzma",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-17",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-18",
+      "kind": "regression",
+      "modules": [
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics"
+      ]
+    },
+    {
+      "id": "reg-19",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-20",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_decimal",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-21",
+      "kind": "regression",
+      "modules": [
+        "test_csv",
+        "test_decimal",
+        "test_functools",
+        "test_gzip",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics"
+      ]
+    },
+    {
+      "id": "reg-22",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_functools",
+        "test_gzip",
+        "test_itertools",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "reg-23",
+      "kind": "regression",
+      "modules": [
+        "test_codecs",
+        "test_csv",
+        "test_decimal",
+        "test_gzip",
+        "test_itertools",
+        "test_lzma",
+        "test_re",
+        "test_sqlite3",
+        "test_statistics",
+        "test_struct"
+      ]
+    },
+    {
+      "id": "inv-decimaltestdata",
+      "kind": "inventory",
+      "folder": "decimaltestdata"
+    },
+    {
+      "id": "inv-test_sqlite3",
+      "kind": "inventory",
+      "folder": "test_sqlite3"
+    },
+    {
+      "id": "inv-test_gdb",
+      "kind": "inventory",
+      "folder": "test_gdb"
+    },
+    {
+      "id": "inv-test_json",
+      "kind": "inventory",
+      "folder": "test_json"
+    },
+    {
+      "id": "inv-test_importlib",
+      "kind": "inventory",
+      "folder": "test_importlib"
+    },
+    {
+      "id": "inv-encoded_modules",
+      "kind": "inventory",
+      "folder": "encoded_modules"
+    },
+    {
+      "id": "inv-test_asyncio",
+      "kind": "inventory",
+      "folder": "test_asyncio"
+    },
+    {
+      "id": "inv-test_email",
+      "kind": "inventory",
+      "folder": "test_email"
+    }
+  ],
+  "allocations": {
+    "1": [
+      [
+        "reg-03",
+        "reg-23",
+        "reg-15",
+        "reg-07",
+        "reg-11",
+        "reg-02",
+        "reg-18",
+        "reg-06",
+        "reg-01",
+        "reg-09",
+        "reg-19",
+        "reg-14",
+        "reg-10",
+        "reg-12",
+        "reg-21",
+        "reg-22",
+        "reg-17",
+        "reg-13",
+        "reg-16",
+        "reg-20",
+        "reg-04",
+        "reg-05",
+        "reg-00",
+        "reg-08",
+        "inv-decimaltestdata",
+        "inv-test_asyncio",
+        "inv-test_email",
+        "inv-test_importlib",
+        "inv-test_sqlite3",
+        "inv-test_json",
+        "inv-test_gdb",
+        "inv-encoded_modules"
+      ]
+    ],
+    "2": [
+      [
+        "reg-03",
+        "reg-07",
+        "reg-02",
+        "reg-06",
+        "reg-01",
+        "reg-19",
+        "reg-12",
+        "reg-21",
+        "reg-17",
+        "reg-20",
+        "reg-04",
+        "reg-00",
+        "inv-test_asyncio",
+        "inv-test_email",
+        "inv-test_importlib",
+        "inv-test_json",
+        "inv-encoded_modules"
+      ],
+      [
+        "reg-23",
+        "reg-15",
+        "reg-11",
+        "reg-18",
+        "reg-09",
+        "reg-14",
+        "reg-10",
+        "reg-22",
+        "reg-13",
+        "reg-16",
+        "reg-05",
+        "reg-08",
+        "inv-decimaltestdata",
+        "inv-test_sqlite3",
+        "inv-test_gdb"
+      ]
+    ],
+    "4": [
+      [
+        "reg-03",
+        "reg-06",
+        "reg-01",
+        "reg-22",
+        "reg-16",
+        "reg-05"
+      ],
+      [
+        "reg-23",
+        "reg-18",
+        "reg-14",
+        "reg-10",
+        "reg-20",
+        "reg-04"
+      ],
+      [
+        "reg-15",
+        "reg-02",
+        "reg-19",
+        "reg-12",
+        "reg-13",
+        "reg-00",
+        "inv-test_asyncio",
+        "inv-test_email",
+        "inv-test_importlib",
+        "inv-test_sqlite3",
+        "inv-test_gdb"
+      ],
+      [
+        "reg-07",
+        "reg-11",
+        "reg-09",
+        "reg-21",
+        "reg-17",
+        "reg-08",
+        "inv-decimaltestdata",
+        "inv-test_json",
+        "inv-encoded_modules"
+      ]
+    ]
+  },
+  "base_plan_sha256": "4d7297299163eee6ffa8c42c4eb681b9c41a5dfa0e0bd9d24426c0747e7e5a16"
+}

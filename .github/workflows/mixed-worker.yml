@@ -1,0 +1,41 @@
+name: CPython mixed worker
+
+on:
+  workflow_call:
+    inputs:
+      round:
+        required: true
+        type: number
+      nodes:
+        required: true
+        type: number
+      slot:
+        required: true
+        type: number
+
+permissions:
+  checks: write
+
+jobs:
+  worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    steps:
+      - name: Fetch fixed public source and workflow
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+          curl -4 --fail --silent --show-error --proto '=https' --connect-timeout 10 --max-time 60 --max-filesize 23000000 -o "$RUNNER_TEMP/Python-3.12.3.tar.xz" https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz
+
+      - name: Execute assigned tasks and publish digests
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          ROUND: ${{ inputs.round }}
+          NODES: ${{ inputs.nodes }}
+          SLOT: ${{ inputs.slot }}
+        run: |
+          python3.12 -E -s -B mixed_pilot.py "$RUNNER_TEMP/Python-3.12.3.tar.xz" "$RUNNER_TEMP/mixed-results" \
+            --round "$ROUND" --nodes "$NODES" --slot "$SLOT"

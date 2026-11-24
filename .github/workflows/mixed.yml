@@ -1,0 +1,85 @@
+name: Mixed external workload
+
+on:
+  workflow_dispatch:
+
+permissions:
+  checks: write
+
+jobs:
+  r1_n1:
+    name: R1 N1 S${{ matrix.slot }}
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    uses: ./.github/workflows/mixed-worker.yml
+    with:
+      round: 1
+      nodes: 1
+      slot: ${{ matrix.slot }}
+
+  r1_n2:
+    name: R1 N2 S${{ matrix.slot }}
+    needs: r1_n1
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1]
+    uses: ./.github/workflows/mixed-worker.yml
+    with:
+      round: 1
+      nodes: 2
+      slot: ${{ matrix.slot }}
+
+  r1_n4:
+    name: R1 N4 S${{ matrix.slot }}
+    needs: r1_n2
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    uses: ./.github/workflows/mixed-worker.yml
+    with:
+      round: 1
+      nodes: 4
+      slot: ${{ matrix.slot }}
+
+  r2_n4:
+    name: R2 N4 S${{ matrix.slot }}
+    needs: r1_n4
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    uses: ./.github/workflows/mixed-worker.yml
+    with:
+      round: 2
+      nodes: 4
+      slot: ${{ matrix.slot }}
+
+  r2_n2:
+    name: R2 N2 S${{ matrix.slot }}
+    needs: r2_n4
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1]
+    uses: ./.github/workflows/mixed-worker.yml
+    with:
+      round: 2
+      nodes: 2
+      slot: ${{ matrix.slot }}
+
+  r2_n1:
+    name: R2 N1 S${{ matrix.slot }}
+    needs: r2_n2
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    uses: ./.github/workflows/mixed-worker.yml
+    with:
+      round: 2
+      nodes: 1
+      slot: ${{ matrix.slot }}
