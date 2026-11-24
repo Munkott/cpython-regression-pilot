@@ -1,0 +1,43 @@
+name: Full model corpus benchmark
+run-name: Full corpus n${{ inputs.nodes }} r${{ inputs.release_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      nodes:
+        type: choice
+        required: true
+        options: ['1', '4']
+      release_id:
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  tokenize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 6
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: ${{ fromJSON(inputs.nodes == '4' && '[0,1,2,3]' || '[0]') }}
+    steps:
+      - name: Checkout the pinned public fixture
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+      - name: Tokenize assigned public texts and return the complete bundle
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          NODES: ${{ inputs.nodes }}
+          SLOT: ${{ matrix.slot }}
+          RELEASE_ID: ${{ inputs.release_id }}
+        run: |
+          python3.12 -E -s -B full_corpus.py "$RUNNER_TEMP/full-inputs" "$RUNNER_TEMP/full-out" \
+            --nodes "$NODES" --slot "$SLOT" --release "$RELEASE_ID"

@@ -33,8 +33,8 @@ def start():
     return time.monotonic(), run.cpu()
 
 
-def fetch_inputs(cache):
-    for name, spec in PLAN["inputs"].items():
+def fetch_inputs(cache, inputs=PLAN["inputs"]):
+    for name, spec in inputs.items():
         path = cache / name
         for url in spec["urls"]:
             headers = (["-H", "Accept: application/vnd.github.raw+json"]
@@ -49,8 +49,8 @@ def fetch_inputs(cache):
             raise ValueError(f"could not acquire verified input {name}")
 
 
-def prepare(cache, out):
-    for name, spec in PLAN["inputs"].items():
+def prepare(cache, out, inputs=PLAN["inputs"]):
+    for name, spec in inputs.items():
         path = cache / name
         if path.stat().st_size != spec["size"] or run.digest(path) != spec["sha256"]:
             raise ValueError(f"invalid pinned input {name}")
@@ -64,7 +64,7 @@ def prepare(cache, out):
 
     encoding_cache = out / "bpe"
     encoding_cache.mkdir()
-    url = PLAN["inputs"]["r50k_base.tiktoken"]["urls"][0]
+    url = inputs["r50k_base.tiktoken"]["urls"][0]
     entry = hashlib.sha1(url.encode()).hexdigest()
     (encoding_cache / entry).write_bytes((cache / "r50k_base.tiktoken").read_bytes())
     os.environ["TIKTOKEN_CACHE_DIR"] = str(encoding_cache)
