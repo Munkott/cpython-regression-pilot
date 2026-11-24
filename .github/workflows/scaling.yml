@@ -1,0 +1,122 @@
+name: CPython external scaling
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  r1_n1:
+    name: R1 N1 S${{ matrix.index }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 1
+      index: ${{ matrix.index }}
+
+  r1_n2:
+    name: R1 N2 S${{ matrix.index }}
+    needs: r1_n1
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 2
+      index: ${{ matrix.index }}
+
+  r1_n4:
+    name: R1 N4 S${{ matrix.index }}
+    needs: r1_n2
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1, 2, 3]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 4
+      index: ${{ matrix.index }}
+
+  r2_n4:
+    name: R2 N4 S${{ matrix.index }}
+    needs: r1_n4
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1, 2, 3]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 4
+      index: ${{ matrix.index }}
+
+  r2_n1:
+    name: R2 N1 S${{ matrix.index }}
+    needs: r2_n4
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 1
+      index: ${{ matrix.index }}
+
+  r2_n2:
+    name: R2 N2 S${{ matrix.index }}
+    needs: r2_n1
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 2
+      index: ${{ matrix.index }}
+
+  r3_n2:
+    name: R3 N2 S${{ matrix.index }}
+    needs: r2_n2
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 2
+      index: ${{ matrix.index }}
+
+  r3_n4:
+    name: R3 N4 S${{ matrix.index }}
+    needs: r3_n2
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1, 2, 3]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 4
+      index: ${{ matrix.index }}
+
+  r3_n1:
+    name: R3 N1 S${{ matrix.index }}
+    needs: r3_n4
+    if: ${{ !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0]
+    uses: ./.github/workflows/measure-shard.yml
+    with:
+      shards: 1
+      index: ${{ matrix.index }}

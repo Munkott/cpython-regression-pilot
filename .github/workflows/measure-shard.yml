@@ -1,0 +1,48 @@
+name: CPython shard measurement
+
+on:
+  workflow_call:
+    inputs:
+      shards:
+        required: true
+        type: number
+      index:
+        required: true
+        type: number
+
+permissions: {}
+
+jobs:
+  measure:
+    name: measure
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Fetch the exact public revision
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+
+      - name: Run this shard of the pinned workload
+        shell: bash
+        env:
+          SHARDS: ${{ inputs.shards }}
+          SHARD_INDEX: ${{ inputs.index }}
+        run: |
+          archive="$RUNNER_TEMP/Python-3.12.3.tar.xz"
+          curl -4 --fail --silent --show-error --proto '=https' --connect-timeout 10 --max-time 60 --max-filesize 23000000 -w '%{size_download} %{time_total}\n' -o "$archive" https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz > "$RUNNER_TEMP/archive-cost.txt"
+          python3.12 -I -B run.py "$archive" "$RUNNER_TEMP/cpython-node" --shards "$SHARDS" --shard-index "$SHARD_INDEX"
+
+      - name: Return a machine-readable receipt in the job log
+        if: always()
+        shell: bash
+        run: |
+          receipt="$RUNNER_TEMP/cpython-node/result.json"
+          test -f "$receipt"
+          printf 'CPYTHON_ARCHIVE_COST '
+          cat "$RUNNER_TEMP/archive-cost.txt"
+          printf 'CPYTHON_RECEIPT_BEGIN\n'
+          gzip -n -c "$receipt" | base64 --wrap=76
+          printf 'CPYTHON_RECEIPT_END\n'
