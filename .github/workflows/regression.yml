@@ -1,0 +1,35 @@
+name: CPython regression pilot
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  regression:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 4
+    steps:
+      - name: Fetch the exact public revision
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+
+      - name: Run the pinned workload
+        shell: bash
+        run: |
+          archive="$RUNNER_TEMP/Python-3.12.3.tar.xz"
+          curl -4 --fail --silent --show-error --proto '=https' --connect-timeout 10 --max-time 60 --max-filesize 23000000 -o "$archive" https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz
+          python3.12 -I -B run.py "$archive" "$RUNNER_TEMP/cpython-node"
+
+      - name: Return a machine-readable receipt in the job log
+        if: always()
+        shell: bash
+        run: |
+          receipt="$RUNNER_TEMP/cpython-node/result.json"
+          test -f "$receipt"
+          printf 'CPYTHON_RECEIPT_BEGIN\n'
+          gzip -n -c "$receipt" | base64 --wrap=76
+          printf 'CPYTHON_RECEIPT_END\n'
