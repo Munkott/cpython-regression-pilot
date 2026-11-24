@@ -1,0 +1,60 @@
+name: CPython stream and recovery pilot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  checks: write
+
+jobs:
+  one:
+    name: N1 S0
+    uses: ./.github/workflows/stream-worker.yml
+    with:
+      nodes: 1
+      slot: 0
+      stage: stream
+
+  two:
+    name: N2 S${{ matrix.slot }}
+    needs: one
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1]
+    uses: ./.github/workflows/stream-worker.yml
+    with:
+      nodes: 2
+      slot: ${{ matrix.slot }}
+      stage: stream
+
+  four:
+    name: N4 S${{ matrix.slot }}
+    needs: two
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    uses: ./.github/workflows/stream-worker.yml
+    with:
+      nodes: 4
+      slot: ${{ matrix.slot }}
+      stage: stream
+
+  seed:
+    name: Recovery seed
+    needs: four
+    uses: ./.github/workflows/stream-worker.yml
+    with:
+      nodes: 1
+      slot: 0
+      stage: seed
+
+  successor:
+    name: Recovery successor
+    needs: seed
+    uses: ./.github/workflows/stream-worker.yml
+    with:
+      nodes: 1
+      slot: 0
+      stage: resume

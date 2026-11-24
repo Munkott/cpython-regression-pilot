@@ -1,0 +1,62 @@
+name: CPython stream worker
+
+on:
+  workflow_call:
+    inputs:
+      nodes:
+        required: true
+        type: number
+      slot:
+        required: true
+        type: number
+      stage:
+        required: true
+        type: string
+
+permissions:
+  checks: write
+
+jobs:
+  worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Fetch the pinned public inputs
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+          curl -4 --fail --silent --show-error --proto '=https' --connect-timeout 10 --max-time 60 --max-filesize 23000000 -o "$RUNNER_TEMP/Python-3.12.3.tar.xz" https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz
+
+      - name: Execute and publish receipts
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          STREAM_NODES: ${{ inputs.nodes }}
+          STREAM_SLOT: ${{ inputs.slot }}
+          STREAM_STAGE: ${{ inputs.stage }}
+        run: |
+          out="$RUNNER_TEMP/stream-work"
+          work=(python3.12 -E -s -B stream_pilot.py "$RUNNER_TEMP/Python-3.12.3.tar.xz" "$out"
+                --nodes "$STREAM_NODES" --slot "$STREAM_SLOT" --stage "$STREAM_STAGE")
+          if [[ "$STREAM_STAGE" != seed ]]; then
+              "${work[@]}"
+              exit
+          fi
+
+          "${work[@]}" &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          for ((i=0; i<120; i++)); do
+              if [[ -f "$out/published.json" ]]; then break; fi
+              kill -0 "$pid"
+              sleep 0.5
+          done
+          test -f "$out/published.json"
+          kill -KILL "$pid"
+          result=0
+          wait "$pid" || result=$?
+          trap - EXIT
+          test "$result" = 137
+          printf '%s\n' 'Seed worker deliberately terminated after durable packet 0.'
