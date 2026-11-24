@@ -1,0 +1,31 @@
+name: Train where the corpus is prepared
+run-name: Trained model r${{ inputs.release_id }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_id:
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  train:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout the pinned public experiment
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+      - name: Prepare data, fit from scratch, and return only the weights
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ inputs.release_id }}
+        run: python3.12 -E -s -B training_node.py "$RUNNER_TEMP/model-experiment" "$RELEASE_ID"
