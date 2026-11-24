@@ -1,0 +1,40 @@
+name: CPython selective refresh
+
+on:
+  workflow_dispatch:
+    inputs:
+      selection:
+        required: true
+        type: string
+
+permissions:
+  checks: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    steps:
+      - name: Checkout public fixture and fetch pinned inputs
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+          /usr/bin/time -f '{"wall_s":%e,"user_s":%U,"system_s":%S}' -o "$RUNNER_TEMP/bootstrap.json" \
+            python3.12 refresh_inputs.py "$RUNNER_TEMP"
+      - name: Execute selected units and publish receipts
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          SELECTION: ${{ inputs.selection }}
+          SLOT: ${{ matrix.slot }}
+        run: |
+          printf '%s\n' "$SELECTION" > "$RUNNER_TEMP/selection.json"
+          "$RUNNER_TEMP/python/install/bin/python3.12" -E -s -B refresh_pilot.py \
+            "$RUNNER_TEMP/source.tar.xz" "$RUNNER_TEMP/refresh-results" \
+            --slot "$SLOT" --selection "$RUNNER_TEMP/selection.json"

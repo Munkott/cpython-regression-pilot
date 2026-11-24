@@ -1,0 +1,29 @@
+{
+  "base_plan_sha256": "4d7297299163eee6ffa8c42c4eb681b9c41a5dfa0e0bd9d24426c0747e7e5a16",
+  "mixed_plan_sha256": "c4b8c00fe2c1421814af744197e51d95cb1bac6150c77d2eb6b97d1569df9e34",
+  "module_weight_s": {
+    "test_codecs": 1.04,
+    "test_csv": 0.38,
+    "test_decimal": 3.6,
+    "test_functools": 0.82,
+    "test_gzip": 0.9,
+    "test_itertools": 4.71,
+    "test_lzma": 2.35,
+    "test_re": 1.03,
+    "test_sqlite3": 0.74,
+    "test_statistics": 1.35,
+    "test_struct": 0.57
+  },
+  "runtime": {
+    "interpreter_sha256": "5d57be9687bd2c6612900d06ab99ec5f1237d866ddfea06bdcb856e4844ce638",
+    "max_bytes": 102000000,
+    "sha256": "1962e693cb4a5ecbb004e6606cf0d196baa19672f6814586a366faeb8f2fd56c",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20261124/cpython-3.12.16%2B20261124-x86_64-unknown-linux-gnu-pgo%2Blto-full.tar.zst"
+  },
+  "source": {
+    "max_bytes": 23000000,
+    "sha256": "b5796915dc45ff745cfb4e990a7e7c93d6f546328a102ce31448d69ebc37575c",
+    "url": "https://www.python.org/ftp/python/3.12.16/Python-3.12.16.tar.xz",
+    "version": "3.12.16"
+  }
+}
