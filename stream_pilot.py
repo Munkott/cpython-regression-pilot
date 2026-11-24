@@ -60,7 +60,7 @@ def digest(blob):
     return hashlib.sha256(blob.encode("ascii")).hexdigest()
 
 
-def publish(identity, data):
+def publish(identity, data, *, title="CPython regression packet receipt"):
     run_id, commit, track, nodes, packet = identity
     name = label(run_id, track, nodes, packet)
     blob = pack(data)
@@ -69,7 +69,7 @@ def publish(identity, data):
     body = {"name": name, "head_sha": commit, "status": "completed", "conclusion": "success",
             "completed_at": run.utc(), "external_id": digest(blob),
             "details_url": f"https://github.com/{REPO}/actions/runs/{run_id}",
-            "output": {"title": "CPython regression packet receipt", "summary": blob}}
+            "output": {"title": title, "summary": blob}}
     try:
         result = request("POST", "/check-runs", body)
     except (OSError, http.client.HTTPException):
