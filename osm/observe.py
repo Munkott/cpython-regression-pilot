@@ -227,6 +227,7 @@ def main():
     parser.add_argument('directory', type=Path)
     parser.add_argument('--summary-only', action='store_true')
     parser.add_argument('--accepted-limit', type=int)
+    parser.add_argument('--until')
     args = parser.parse_args()
     if args.accepted_limit is not None and args.accepted_limit < 1:
         parser.error('accepted-limit must be positive')
@@ -234,6 +235,8 @@ def main():
     raw = (folder/'frozen.json').read_bytes()
     plan = json.loads(raw)
     deadline = datetime.fromisoformat(plan['primary_deadline_utc'])
+    if args.until:
+        deadline = min(deadline, datetime.fromisoformat(args.until))
     db = journal(folder/'journal.sqlite', hashlib.sha256(raw).hexdigest())
 
     def save(seq, route, receipt):
@@ -265,21 +268,22 @@ def main():
                 if state:
                     pair = fetch_pair(base+'.osc.gz',idx%2==0,seq,deadline,save)
                     matched = compare(pair)
-                    stamp = now().isoformat() if matched else None
-                    with db:
-                        db.execute(
-                            "INSERT INTO receipts VALUES (?,?) "
-                            "ON CONFLICT(sequence) DO UPDATE SET payload=excluded.payload "
-                            "WHERE json_extract(receipts.payload,'$.accepted_at') IS NULL",
-                            (seq, json.dumps({'state': state, **pair, 'execution': execution_id,
-                                              'accepted_at': stamp})),
-                        )
-                    save_summary()
-                    print(seq,matched,[pair[v]['status'] for v in ('range','full')],flush=True)
-                    if matched:
+                    if matched and now() < deadline:
+                        stamp = now().isoformat()
+                        with db:
+                            db.execute(
+                                "INSERT INTO receipts VALUES (?,?) "
+                                "ON CONFLICT(sequence) DO UPDATE SET payload=excluded.payload "
+                                "WHERE json_extract(receipts.payload,'$.accepted_at') IS NULL",
+                                (seq, json.dumps({'state': state, **pair, 'execution': execution_id,
+                                                  'accepted_at': stamp})),
+                            )
+                        save_summary()
                         accepted.add(seq)
+                        print(seq,True,[pair[v]['status'] for v in ('range','full')],flush=True)
                         break
-                if receipt['status'] not in (0,404,500,502,503,504):
+                    print(seq,False,[pair[v]['status'] for v in ('range','full')],flush=True)
+                if receipt['status'] not in (0,200,404,500,502,503,504):
                     break
                 remaining = (deadline-now()).total_seconds()
                 if remaining > 0:

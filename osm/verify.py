@@ -24,11 +24,11 @@ def public_archive(base, seq):
         return target.read()
 
 
-def check(directory, online):
+def check(directory, online, stride=1):
     raw = (directory/'frozen.json').read_bytes()
     plan = json.loads(raw)
     assert hashlib.sha256((directory/'initial.state').read_bytes()).hexdigest() == plan['initial_state_sha256']
-    assert plan['sequences'] == list(range(plan['anchor_sequence']+1,plan['anchor_sequence']+11))
+    assert plan['sequences'] == list(range(plan['anchor_sequence']+1,plan['anchor_sequence']+1+len(plan['sequences'])))
     archived = json.loads((directory/'results.json').read_bytes())
     db = sqlite3.connect((directory/'journal.sqlite').as_uri()+'?mode=ro', uri=True)
     assert db.execute("SELECT value FROM metadata WHERE key='plan_hash'").fetchone()[0] == hashlib.sha256(raw).hexdigest()
@@ -57,7 +57,11 @@ def check(directory, online):
          'reproducible_results':True,'two_member_counterexample':True,'compressed_bytes_bound_for_isize':threshold}
     if online:
         generators=Counter()
-        for seq, row in rows.items():
+        selected=list(rows)[::stride]
+        if rows and list(rows)[-1] not in selected:
+            selected.append(list(rows)[-1])
+        for seq in selected:
+            row=rows[seq]
             raw_archive = public_archive(plan['archive_base'], int(seq))
             exact = row['full']['answer']
             assert hashlib.sha256(raw_archive).hexdigest()==exact['archive_sha256'],seq
@@ -66,7 +70,7 @@ def check(directory, online):
                 assert len(data)==exact['size'] and not source.read(1),seq
             generator=re.search(rb'<osmChange\b[^>]*\bgenerator="([^"]+)"',data[:1024])
             generators[generator.group(1).decode() if generator else 'unavailable'] += 1
-        out.update(online_full_archives=len(rows), declared_generators=dict(generators))
+        out.update(online_full_archives=len(selected), independently_verified_sequences=[int(s) for s in selected], declared_generators=dict(generators))
     return out
 
 

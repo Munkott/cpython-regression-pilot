@@ -1,5 +1,5 @@
-name: OSM journal handoff without an attached observer
-run-name: OSM journal handoff r${{ inputs.release_id }}
+name: Two-hour detached OSM queue
+run-name: OSM two-hour r${{ inputs.release_id }}
 
 on:
   workflow_dispatch:
@@ -16,26 +16,44 @@ permissions:
   checks: write
 
 jobs:
-  seed:
-    name: seed
+  s30:
+    name: s30
     uses: ./.github/workflows/osm-handoff-worker.yml
     with:
-      stage: seed
+      stage: s30
       release: ${{ inputs.release_id }}
       not_before: ${{ inputs.not_before }}
 
-  resume:
-    name: resume
-    needs: seed
+  s60:
+    name: s60
+    needs: s30
     uses: ./.github/workflows/osm-handoff-worker.yml
     with:
-      stage: resume
+      stage: s60
+      release: ${{ inputs.release_id }}
+      not_before: ${{ inputs.not_before }}
+
+  s90:
+    name: s90
+    needs: s60
+    uses: ./.github/workflows/osm-handoff-worker.yml
+    with:
+      stage: s90
+      release: ${{ inputs.release_id }}
+      not_before: ${{ inputs.not_before }}
+
+  s120:
+    name: s120
+    needs: s90
+    uses: ./.github/workflows/osm-handoff-worker.yml
+    with:
+      stage: s120
       release: ${{ inputs.release_id }}
       not_before: ${{ inputs.not_before }}
 
   replay:
     name: replay
-    needs: resume
+    needs: s120
     uses: ./.github/workflows/osm-handoff-worker.yml
     with:
       stage: replay
