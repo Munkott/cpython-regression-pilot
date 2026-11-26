@@ -1,0 +1,41 @@
+name: Model recovery worker
+
+on:
+  workflow_call:
+    inputs:
+      release:
+        type: string
+        required: true
+      role:
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  work:
+    name: worker
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - name: Checkout pinned experiment
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+      - name: Run role and verify the prescribed process outcome
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ inputs.release }}
+          ROLE: ${{ inputs.role }}
+        run: |
+          code=0
+          python3.12 -E -s -B recovery_pilot.py "$RUNNER_TEMP/queue-role" "$ROLE" "$RELEASE_ID" || code=$?
+          printf 'RECOVERY_PROCESS_EXIT %s %s\n' "$ROLE" "$code"
+          if [[ "$ROLE" == fault-first ]]; then
+            test "$code" -eq 137
+          else
+            test "$code" -eq 0
+          fi

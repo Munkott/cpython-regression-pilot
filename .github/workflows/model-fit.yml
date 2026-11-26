@@ -1,5 +1,5 @@
-name: Sustained training queue comparison
-run-name: Sustained ${{ inputs.queue }} n${{ inputs.nodes }} r${{ inputs.release_id }}
+name: Model queue recovery with an independent successor
+run-name: Model recovery ${{ inputs.mode }} r${{ inputs.release_id }}
 
 on:
   workflow_dispatch:
@@ -7,12 +7,9 @@ on:
       release_id:
         type: string
         required: true
-      queue:
-        type: string
-        required: true
-      nodes:
+      mode:
         type: choice
-        options: ['1', '2', '4']
+        options: ['normal', 'fault']
         required: true
 
 permissions:
@@ -20,28 +17,40 @@ permissions:
   checks: write
 
 jobs:
-  fit:
-    name: Node ${{ matrix.slot }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 18
+  normal:
+    name: normal-${{ matrix.slot }}
+    if: inputs.mode == 'normal'
     strategy:
       fail-fast: false
       matrix:
-        slot: ${{ fromJSON(inputs.nodes == '4' && '[0,1,2,3]' || inputs.nodes == '2' && '[0,1]' || '[0]') }}
-    steps:
-      - name: Checkout pinned code
-        shell: bash
-        run: |
-          git init --quiet
-          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
-          git checkout --quiet --detach FETCH_HEAD
-      - name: Fit allocated candidates with one warm environment
-        shell: bash
-        env:
-          STREAM_CHECK_TOKEN: ${{ github.token }}
-          RELEASE_ID: ${{ inputs.release_id }}
-          NODES: ${{ inputs.nodes }}
-          SLOT: ${{ matrix.slot }}
-          QUEUE: ${{ inputs.queue }}
-        run: |
-          python3.12 -E -s -B queue_run.py "$RUNNER_TEMP/queue" "$QUEUE" --nodes "$NODES" --slot "$SLOT" --release "$RELEASE_ID"
+        slot: [0, 1]
+    uses: ./.github/workflows/model-recovery-worker.yml
+    with:
+      role: normal-${{ matrix.slot }}
+      release: ${{ inputs.release_id }}
+
+  fault-first:
+    name: fault-first
+    if: inputs.mode == 'fault'
+    uses: ./.github/workflows/model-recovery-worker.yml
+    with:
+      role: fault-first
+      release: ${{ inputs.release_id }}
+
+  fault-peer:
+    name: fault-peer
+    if: inputs.mode == 'fault'
+    uses: ./.github/workflows/model-recovery-worker.yml
+    with:
+      role: fault-peer
+      release: ${{ inputs.release_id }}
+
+  fault-next:
+    name: fault-next
+    if: inputs.mode == 'fault'
+    needs: fault-first
+    uses: ./.github/workflows/model-recovery-worker.yml
+    with:
+      role: fault-next
+      release: ${{ inputs.release_id }}
+
