@@ -1,0 +1,37 @@
+name: OSM journal worker
+
+on:
+  workflow_call:
+    inputs:
+      stage:
+        type: string
+        required: true
+      release:
+        type: string
+        required: true
+      not_before:
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  handoff:
+    name: worker
+    runs-on: ubuntu-24.04
+    timeout-minutes: 39
+    steps:
+      - name: Checkout pinned experiment
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+      - name: Process the journal stage
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          RELEASE: ${{ inputs.release }}
+          STAGE: ${{ inputs.stage }}
+          ACTIVATE: ${{ inputs.not_before }}
+        run: python3 -E -s -B osm_handoff.py "$RUNNER_TEMP/osm-handoff" "$STAGE" "$RELEASE" "$ACTIVATE"

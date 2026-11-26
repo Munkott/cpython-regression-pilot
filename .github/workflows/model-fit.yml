@@ -1,5 +1,5 @@
-name: Model queue recovery after heartbeat silence
-run-name: Model recovery ${{ inputs.mode }} r${{ inputs.release_id }}
+name: OSM journal handoff without an attached observer
+run-name: OSM journal handoff r${{ inputs.release_id }}
 
 on:
   workflow_dispatch:
@@ -7,9 +7,8 @@ on:
       release_id:
         type: string
         required: true
-      mode:
-        type: choice
-        options: ['normal', 'fault']
+      not_before:
+        type: string
         required: true
 
 permissions:
@@ -17,39 +16,28 @@ permissions:
   checks: write
 
 jobs:
-  normal:
-    name: normal-${{ matrix.slot }}
-    if: inputs.mode == 'normal'
-    strategy:
-      fail-fast: false
-      matrix:
-        slot: [0, 1]
-    uses: ./.github/workflows/model-recovery-worker.yml
+  seed:
+    name: seed
+    uses: ./.github/workflows/osm-handoff-worker.yml
     with:
-      role: normal-${{ matrix.slot }}
+      stage: seed
       release: ${{ inputs.release_id }}
+      not_before: ${{ inputs.not_before }}
 
-  fault-first:
-    name: fault-first
-    if: inputs.mode == 'fault'
-    uses: ./.github/workflows/model-recovery-worker.yml
+  resume:
+    name: resume
+    needs: seed
+    uses: ./.github/workflows/osm-handoff-worker.yml
     with:
-      role: fault-first
+      stage: resume
       release: ${{ inputs.release_id }}
+      not_before: ${{ inputs.not_before }}
 
-  fault-peer:
-    name: fault-peer
-    if: inputs.mode == 'fault'
-    uses: ./.github/workflows/model-recovery-worker.yml
+  replay:
+    name: replay
+    needs: resume
+    uses: ./.github/workflows/osm-handoff-worker.yml
     with:
-      role: fault-peer
+      stage: replay
       release: ${{ inputs.release_id }}
-
-  fault-next:
-    name: fault-next
-    if: inputs.mode == 'fault'
-    uses: ./.github/workflows/model-recovery-worker.yml
-    with:
-      role: fault-next
-      release: ${{ inputs.release_id }}
-
+      not_before: ${{ inputs.not_before }}
