@@ -28,6 +28,8 @@ def request(method, path, fields=None):
                       "User-Agent": "cpython-stream-pilot"})
         response = conn.getresponse()
         payload = json.loads(response.read(2_000_000))
+        if response.status in (502, 503, 504):
+            raise http.client.HTTPException(f"GitHub Checks HTTP {response.status}")
         if response.status not in (200, 201):
             raise ValueError(f"GitHub Checks HTTP {response.status}: {payload.get('message')}")
         return payload
@@ -70,18 +72,21 @@ def publish(identity, data, *, title="CPython regression packet receipt"):
             "completed_at": run.utc(), "external_id": digest(blob),
             "details_url": f"https://github.com/{REPO}/actions/runs/{run_id}",
             "output": {"title": title, "summary": blob}}
-    try:
-        result = request("POST", "/check-runs", body)
-    except (OSError, http.client.HTTPException):
-        # Resolve an ambiguous write through readback before retrying.
-        result = None
-        for _ in range(2):
-            time.sleep(2)
-            result = find(commit, name)
+    result = None
+    for attempt in range(3):
+        try:
+            result = request("POST", "/check-runs", body)
+            break
+        except (OSError, http.client.HTTPException):
+            for delay in (2, 4):
+                time.sleep(delay)
+                result = find(commit, name)
+                if result:
+                    break
             if result:
                 break
-        if result is None:
-            result = request("POST", "/check-runs", body)
+            if attempt == 2:
+                raise
     if result["head_sha"] != commit or result["name"] != name or result["external_id"] != body["external_id"]:
         raise ValueError("check write did not preserve the receipt identity")
     print(f"{name} check_id={result['id']}", flush=True)
