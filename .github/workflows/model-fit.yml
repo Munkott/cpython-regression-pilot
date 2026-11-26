@@ -1,5 +1,5 @@
-name: Train where the corpus is prepared
-run-name: Trained model r${{ inputs.release_id }}
+name: Independent model training queue
+run-name: Model sweep r${{ inputs.release_id }}
 
 on:
   workflow_dispatch:
@@ -13,19 +13,74 @@ permissions:
   checks: write
 
 jobs:
-  train:
+  n1:
+    name: N1 S${{ matrix.slot }}
     runs-on: ubuntu-24.04
     timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
     steps:
-      - name: Checkout the pinned public experiment
+      - name: Checkout pinned public queue
         shell: bash
         run: |
           git init --quiet
           git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
           git checkout --quiet --detach FETCH_HEAD
-      - name: Prepare data, fit from scratch, and return only the weights
+      - name: Fit assigned candidates and publish the local winner
         shell: bash
         env:
           STREAM_CHECK_TOKEN: ${{ github.token }}
           RELEASE_ID: ${{ inputs.release_id }}
-        run: python3.12 -E -s -B training_node.py "$RUNNER_TEMP/model-experiment" "$RELEASE_ID"
+          SLOT: ${{ matrix.slot }}
+        run: python3.12 -E -s -B sweep.py "$RUNNER_TEMP/model-sweep" --nodes 1 --slot "$SLOT" --release "$RELEASE_ID"
+
+  n2:
+    name: N2 S${{ matrix.slot }}
+    needs: n1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1]
+    steps:
+      - name: Checkout pinned public queue
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+      - name: Fit assigned candidates and publish the local winner
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          SLOT: ${{ matrix.slot }}
+        run: python3.12 -E -s -B sweep.py "$RUNNER_TEMP/model-sweep" --nodes 2 --slot "$SLOT" --release "$RELEASE_ID"
+
+  n4:
+    name: N4 S${{ matrix.slot }}
+    needs: n2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    steps:
+      - name: Checkout pinned public queue
+        shell: bash
+        run: |
+          git init --quiet
+          git fetch --quiet --depth=1 "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git" "${GITHUB_SHA}"
+          git checkout --quiet --detach FETCH_HEAD
+      - name: Fit assigned candidates and publish the local winner
+        shell: bash
+        env:
+          STREAM_CHECK_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ inputs.release_id }}
+          SLOT: ${{ matrix.slot }}
+        run: python3.12 -E -s -B sweep.py "$RUNNER_TEMP/model-sweep" --nodes 4 --slot "$SLOT" --release "$RELEASE_ID"
+

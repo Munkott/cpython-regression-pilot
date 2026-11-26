@@ -1,0 +1,75 @@
+{
+  "holdout": {
+    "samples": 8192,
+    "seed": 202611221,
+    "source": "gutenberg-api.zip"
+  },
+  "selection": {
+    "samples": 4096,
+    "seed": 202611220,
+    "source": "europarl-raw.zip"
+  },
+  "training_plan_sha256": "ba8c1cd75648417f957e6633ec2cbc437a451420858a180f2152311c10cb16c4",
+  "variants": [
+    {
+      "id": "v00",
+      "learning_rate": 0.001,
+      "seed": 20261124
+    },
+    {
+      "id": "v03",
+      "learning_rate": 0.0025,
+      "seed": 20261129
+    },
+    {
+      "id": "v04",
+      "learning_rate": 0.005,
+      "seed": 20261124
+    },
+    {
+      "id": "v07",
+      "learning_rate": 0.008,
+      "seed": 20261129
+    },
+    {
+      "id": "v08",
+      "learning_rate": 0.012,
+      "seed": 20261124
+    },
+    {
+      "id": "v11",
+      "learning_rate": 0.016,
+      "seed": 20261129
+    },
+    {
+      "id": "v01",
+      "learning_rate": 0.001,
+      "seed": 20261129
+    },
+    {
+      "id": "v02",
+      "learning_rate": 0.0025,
+      "seed": 20261124
+    },
+    {
+      "id": "v05",
+      "learning_rate": 0.005,
+      "seed": 20261129
+    },
+    {
+      "id": "v06",
+      "learning_rate": 0.008,
+      "seed": 20261124
+    },
+    {
+      "id": "v09",
+      "learning_rate": 0.012,
+      "seed": 20261129
+    },
+    {
+      "id": "v10",
+      "learning_rate": 0.016,
+      "seed": 20261124
+    }
+  ]
+}
