@@ -1,75 +1,88 @@
 {
+  "cohorts": [
+    {
+      "id": "q24",
+      "order": [
+        1,
+        2,
+        4
+      ],
+      "size": 24
+    },
+    {
+      "id": "q72",
+      "order": [
+        4,
+        2,
+        1
+      ],
+      "size": 72
+    },
+    {
+      "id": "q144",
+      "order": [
+        2,
+        1,
+        4
+      ],
+      "size": 144
+    },
+    {
+      "id": "q192",
+      "order": [
+        4,
+        1,
+        2
+      ],
+      "size": 192
+    },
+    {
+      "id": "repeat144",
+      "order": [
+        1,
+        4,
+        2
+      ],
+      "size": 144
+    },
+    {
+      "id": "repeat192",
+      "order": [
+        2,
+        4,
+        1
+      ],
+      "size": 192
+    },
+    {
+      "id": "confirm96",
+      "order": [
+        1,
+        2,
+        4
+      ],
+      "size": 96
+    }
+  ],
+  "deadline_s": 7200,
   "holdout": {
-    "samples": 8192,
-    "seed": 202611221,
-    "source": "gutenberg-api.zip"
+    "europarl_date": "ep-00-02-16",
+    "gutenberg": "gutenberg/melville-moby_dick.txt",
+    "samples_each": 4096,
+    "seed": 202611225
   },
+  "rates": [
+    0.0025,
+    0.0035,
+    0.0045,
+    0.0055,
+    0.007,
+    0.009
+  ],
   "selection": {
-    "samples": 4096,
-    "seed": 202611220,
-    "source": "europarl-raw.zip"
+    "samples_each": 2048,
+    "seed": 202611220
   },
   "training_plan_sha256": "ba8c1cd75648417f957e6633ec2cbc437a451420858a180f2152311c10cb16c4",
-  "variants": [
-    {
-      "id": "v00",
-      "learning_rate": 0.001,
-      "seed": 20261124
-    },
-    {
-      "id": "v03",
-      "learning_rate": 0.0025,
-      "seed": 20261129
-    },
-    {
-      "id": "v04",
-      "learning_rate": 0.005,
-      "seed": 20261124
-    },
-    {
-      "id": "v07",
-      "learning_rate": 0.008,
-      "seed": 20261129
-    },
-    {
-      "id": "v08",
-      "learning_rate": 0.012,
-      "seed": 20261124
-    },
-    {
-      "id": "v11",
-      "learning_rate": 0.016,
-      "seed": 20261129
-    },
-    {
-      "id": "v01",
-      "learning_rate": 0.001,
-      "seed": 20261129
-    },
-    {
-      "id": "v02",
-      "learning_rate": 0.0025,
-      "seed": 20261124
-    },
-    {
-      "id": "v05",
-      "learning_rate": 0.005,
-      "seed": 20261129
-    },
-    {
-      "id": "v06",
-      "learning_rate": 0.008,
-      "seed": 20261124
-    },
-    {
-      "id": "v09",
-      "learning_rate": 0.012,
-      "seed": 20261129
-    },
-    {
-      "id": "v10",
-      "learning_rate": 0.016,
-      "seed": 20261124
-    }
-  ]
+  "worker_publication_packet": 8
 }

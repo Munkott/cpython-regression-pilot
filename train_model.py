@@ -208,9 +208,17 @@ def choose_parameters(checkpoint):
     return params
 
 
-def fit(dataset, output):
+def fit(dataset, output, *, exclude_documents=()):
     started = clock()
     train = load_corpus(dataset, "train")
+    if exclude_documents:
+        manifest = json.loads((dataset / "manifest.json").read_bytes())
+        docs = [row for row in manifest["documents"] if row["split"] == "train"]
+        keep = np.array([row["document"] not in exclude_documents for row in docs])
+        lengths = (train.ends - train.previous)[keep]
+        train.starts = train.starts[keep]
+        train.ends = np.cumsum(lengths)
+        train.previous = np.concatenate(([0],train.ends[:-1]))
     x_eval, y_eval, validation_positions = heldout(dataset)
     gradient_check = check_gradient()
     train_positions = train.sample(PLAN["seed_train"], PLAN["steps"] * PLAN["batch"])
