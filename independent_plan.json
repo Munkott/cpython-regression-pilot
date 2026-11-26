@@ -1,0 +1,557 @@
+{
+  "allocations": {
+    "1": [
+      [
+        "test_ast",
+        "test_calendar",
+        "test_queue",
+        "test_enum",
+        "test_math",
+        "test_gc",
+        "test_warnings",
+        "test_array",
+        "test_pickletools",
+        "test_difflib",
+        "test_pyclbr",
+        "test_tokenize",
+        "test_pkgutil",
+        "test_profile",
+        "test_plistlib",
+        "test_dis",
+        "test_random",
+        "test_typing",
+        "test_fractions",
+        "test_unicodedata",
+        "test_heapq",
+        "test_py_compile",
+        "test_dataclasses",
+        "test_xml_etree",
+        "test_colorsys",
+        "test_generators",
+        "test_copy",
+        "test_collections",
+        "test_range",
+        "test_complex",
+        "test_graphlib",
+        "test_cmath",
+        "test_zipimport",
+        "test_pprint",
+        "test_types",
+        "test_hmac",
+        "test_secrets",
+        "test_contextlib",
+        "test_quopri",
+        "test_ipaddress",
+        "test_list",
+        "test_pstats",
+        "test_ntpath",
+        "test_reprlib",
+        "test_copyreg",
+        "test_string",
+        "test_abc",
+        "test_binascii",
+        "test_bisect",
+        "test_stringprep",
+        "test_uuid",
+        "test_mimetypes",
+        "test_linecache",
+        "test_timeit",
+        "test_optparse",
+        "test_keyword",
+        "test_symtable",
+        "test_html",
+        "test_textwrap",
+        "test_operator",
+        "test_sched",
+        "test_tomllib",
+        "test_netrc",
+        "test_shlex"
+      ]
+    ],
+    "2": [
+      [
+        "test_ast",
+        "test_enum",
+        "test_gc",
+        "test_array",
+        "test_difflib",
+        "test_pkgutil",
+        "test_profile",
+        "test_random",
+        "test_typing",
+        "test_heapq",
+        "test_dataclasses",
+        "test_colorsys",
+        "test_generators",
+        "test_collections",
+        "test_complex",
+        "test_cmath",
+        "test_pprint",
+        "test_secrets",
+        "test_contextlib",
+        "test_ipaddress",
+        "test_ntpath",
+        "test_copyreg",
+        "test_string",
+        "test_bisect",
+        "test_stringprep",
+        "test_mimetypes",
+        "test_timeit",
+        "test_symtable",
+        "test_textwrap",
+        "test_sched",
+        "test_netrc",
+        "test_shlex"
+      ],
+      [
+        "test_calendar",
+        "test_queue",
+        "test_math",
+        "test_warnings",
+        "test_pickletools",
+        "test_pyclbr",
+        "test_tokenize",
+        "test_plistlib",
+        "test_dis",
+        "test_fractions",
+        "test_unicodedata",
+        "test_py_compile",
+        "test_xml_etree",
+        "test_copy",
+        "test_range",
+        "test_graphlib",
+        "test_zipimport",
+        "test_types",
+        "test_hmac",
+        "test_quopri",
+        "test_list",
+        "test_pstats",
+        "test_reprlib",
+        "test_abc",
+        "test_binascii",
+        "test_uuid",
+        "test_linecache",
+        "test_optparse",
+        "test_keyword",
+        "test_html",
+        "test_operator",
+        "test_tomllib"
+      ]
+    ],
+    "4": [
+      [
+        "test_ast",
+        "test_pyclbr",
+        "test_plistlib",
+        "test_typing",
+        "test_dataclasses",
+        "test_collections",
+        "test_complex",
+        "test_pprint",
+        "test_ipaddress",
+        "test_ntpath",
+        "test_bisect",
+        "test_stringprep",
+        "test_symtable",
+        "test_textwrap",
+        "test_shlex"
+      ],
+      [
+        "test_calendar",
+        "test_warnings",
+        "test_difflib",
+        "test_profile",
+        "test_fractions",
+        "test_py_compile",
+        "test_generators",
+        "test_graphlib",
+        "test_types",
+        "test_list",
+        "test_pstats",
+        "test_abc",
+        "test_uuid",
+        "test_keyword",
+        "test_operator",
+        "test_tomllib"
+      ],
+      [
+        "test_queue",
+        "test_gc",
+        "test_array",
+        "test_pkgutil",
+        "test_dis",
+        "test_heapq",
+        "test_colorsys",
+        "test_copy",
+        "test_cmath",
+        "test_secrets",
+        "test_contextlib",
+        "test_reprlib",
+        "test_binascii",
+        "test_linecache",
+        "test_timeit",
+        "test_sched"
+      ],
+      [
+        "test_enum",
+        "test_math",
+        "test_pickletools",
+        "test_tokenize",
+        "test_random",
+        "test_unicodedata",
+        "test_xml_etree",
+        "test_range",
+        "test_zipimport",
+        "test_hmac",
+        "test_quopri",
+        "test_copyreg",
+        "test_string",
+        "test_mimetypes",
+        "test_optparse",
+        "test_html",
+        "test_netrc"
+      ]
+    ]
+  },
+  "archive_sha256": "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1",
+  "cpu_weights": {
+    "test_abc": 0.55,
+    "test_array": 2.66,
+    "test_ast": 8.92,
+    "test_binascii": 0.55,
+    "test_bisect": 0.52,
+    "test_calendar": 5.970000000000001,
+    "test_cmath": 0.8899999999999999,
+    "test_collections": 0.9600000000000001,
+    "test_colorsys": 1.03,
+    "test_complex": 0.9000000000000001,
+    "test_contextlib": 0.72,
+    "test_copy": 1.01,
+    "test_copyreg": 0.5700000000000001,
+    "test_dataclasses": 1.21,
+    "test_difflib": 2.41,
+    "test_dis": 1.5299999999999998,
+    "test_enum": 3.62,
+    "test_fractions": 1.31,
+    "test_gc": 3.13,
+    "test_generators": 1.03,
+    "test_graphlib": 0.89,
+    "test_heapq": 1.28,
+    "test_hmac": 0.81,
+    "test_html": 0.38,
+    "test_ipaddress": 0.7000000000000001,
+    "test_keyword": 0.4,
+    "test_linecache": 0.45,
+    "test_list": 0.66,
+    "test_math": 3.44,
+    "test_mimetypes": 0.45999999999999996,
+    "test_netrc": 0.32999999999999996,
+    "test_ntpath": 0.61,
+    "test_operator": 0.37,
+    "test_optparse": 0.42,
+    "test_pickletools": 2.5,
+    "test_pkgutil": 2.08,
+    "test_plistlib": 1.7000000000000002,
+    "test_pprint": 0.84,
+    "test_profile": 1.79,
+    "test_pstats": 0.62,
+    "test_py_compile": 1.23,
+    "test_pyclbr": 2.26,
+    "test_queue": 3.79,
+    "test_quopri": 0.71,
+    "test_random": 1.43,
+    "test_range": 0.94,
+    "test_reprlib": 0.6,
+    "test_sched": 0.36,
+    "test_secrets": 0.78,
+    "test_shlex": 0.32999999999999996,
+    "test_string": 0.5700000000000001,
+    "test_stringprep": 0.51,
+    "test_symtable": 0.39,
+    "test_textwrap": 0.38,
+    "test_timeit": 0.45,
+    "test_tokenize": 2.1500000000000004,
+    "test_tomllib": 0.34,
+    "test_types": 0.82,
+    "test_typing": 1.41,
+    "test_unicodedata": 1.31,
+    "test_uuid": 0.5,
+    "test_warnings": 2.75,
+    "test_xml_etree": 1.1199999999999999,
+    "test_zipimport": 0.87
+  },
+  "excluded_over_quarter_reference_cpu": [
+    "test_json"
+  ],
+  "expected": {
+    "test_abc": {
+      "cases": 72,
+      "digest": "952c7fe3d7dd3cf35a47b714d3dff34d62ba01655461867f499201dbdde367cc"
+    },
+    "test_array": {
+      "cases": 813,
+      "digest": "6d7cc82a34dd3df26e20e15ccf39db9527688501b8099886d7045570bcf4b70c"
+    },
+    "test_ast": {
+      "cases": 163,
+      "digest": "edab599bfb0ad813001a1f81d559a9bfd8e92cfdc4b8a89bf8048bb0f7f9dad1"
+    },
+    "test_binascii": {
+      "cases": 73,
+      "digest": "e2db3aa05ba88aecf566f0690aacce529bd70e61b337d597809125d7eafd97f5"
+    },
+    "test_bisect": {
+      "cases": 46,
+      "digest": "8906ca571f0762479d9829f3d0581c410776fd9b116fcef17b0886c0b0ecd382"
+    },
+    "test_calendar": {
+      "cases": 73,
+      "digest": "d88e091ed2606bdf03b9652522124109b99b7f5f223dc5767af425d87fa6fa04"
+    },
+    "test_cmath": {
+      "cases": 33,
+      "digest": "5fa224328c4d8b893b100d9e1e96dd1dde8e565d41011ca602b21882f6cf52af"
+    },
+    "test_collections": {
+      "cases": 114,
+      "digest": "76c5a07a6a29ab827519db39296461f1634cc37e24a0386832fabe19b9b7e291"
+    },
+    "test_colorsys": {
+      "cases": 7,
+      "digest": "3a2cc547fa574b133cff6afe544dd6f002eac308feb24eabee4f400de1a9caff"
+    },
+    "test_complex": {
+      "cases": 34,
+      "digest": "90521443d48d47fb3e45d5ecea63aaa6c1d00ffdb02a84707bba4c241cd33de0"
+    },
+    "test_contextlib": {
+      "cases": 90,
+      "digest": "3051c630f4ebd9a5d413d12b7041eaec55b31bc74d75eab412c331429569973c"
+    },
+    "test_copy": {
+      "cases": 76,
+      "digest": "400ebc8bd51982aa76a3367992defebc77ee2f36e13edc126ebd7b0e23126266"
+    },
+    "test_copyreg": {
+      "cases": 6,
+      "digest": "b52ec12e084042e3c4d46310d7ef3d16b993f08ba85e7365f41b9c93e8652155"
+    },
+    "test_dataclasses": {
+      "cases": 234,
+      "digest": "e28bfd1f7a82a49d1eb528d1ff218714cc8b9365db13544e39ca42d2784a0c1c"
+    },
+    "test_difflib": {
+      "cases": 51,
+      "digest": "6fba8f678c6bf6c023ae8d113a4671ca39a3f125b2a2218841fc5b48d9561a25"
+    },
+    "test_dis": {
+      "cases": 119,
+      "digest": "5cd5a9fbc81df6dd7033c09c6b9eaaa36a0a9fb771246b1ee2ca16efa88633e6"
+    },
+    "test_enum": {
+      "cases": 1070,
+      "digest": "ad620b621bab67a5885dfbc71b5bf4851299b8dec5044f087496d1b0f2a9ee33"
+    },
+    "test_fractions": {
+      "cases": 40,
+      "digest": "17c76fb65bb70437fe6430dad72ef55216758e19f3118201288729222f2d2819"
+    },
+    "test_gc": {
+      "cases": 47,
+      "digest": "035dbfc7802550ff7d99135f47f348bd7c3d839e81eaa94ee7b89e1a2793f05e"
+    },
+    "test_generators": {
+      "cases": 41,
+      "digest": "7561d0ac506962eb16774df9425aa0b771ce8dd9b6d12bdd57b980d78d2dae6c"
+    },
+    "test_graphlib": {
+      "cases": 15,
+      "digest": "db7eac8049414d1fe5fdc3788d6a20c8f6ab6dd4d327d7213d50888ea48a6427"
+    },
+    "test_heapq": {
+      "cases": 51,
+      "digest": "88c7a10e96147f23b6eabf8f9b48af353f5b52335e901c7acbba691216046f36"
+    },
+    "test_hmac": {
+      "cases": 28,
+      "digest": "797dc1e33abb2020cbfcc47759a66e0a5dace24e334d51c1bb111f07b15b66ce"
+    },
+    "test_html": {
+      "cases": 2,
+      "digest": "57c9f95acfb17eb878054c3da2eec3987d0a3da4480fb2263c2d827b79e775b8"
+    },
+    "test_ipaddress": {
+      "cases": 204,
+      "digest": "1c2fb6d421c622eea6369bd4ecc41c5b13f12c409f740af309558ac6bef53ec8"
+    },
+    "test_keyword": {
+      "cases": 11,
+      "digest": "cea10812014332578171b8a7294a87776e46b7e31892b62265e9bf76710e620b"
+    },
+    "test_linecache": {
+      "cases": 25,
+      "digest": "a9674265b5b2481d74943fbf7a49c69a5f9a4d86b47782671af5c2b6c68dd2d6"
+    },
+    "test_list": {
+      "cases": 58,
+      "digest": "2b8937fb19187e1c990381acb39a5ca7522f0184f274dfb9853e674d74b15bc2"
+    },
+    "test_math": {
+      "cases": 79,
+      "digest": "dffab3c54dea098674062fd6334693de80306056b244f0c92f3ab6dbdf43bd95"
+    },
+    "test_mimetypes": {
+      "cases": 23,
+      "digest": "476bbe620869ad4221d47f17899e5f105226a6fb46a0f4ea4f6a2a53e86720a2"
+    },
+    "test_netrc": {
+      "cases": 22,
+      "digest": "62595c7a77bc70eef5cf5008f95acc6b2074428802ce2e05083ac3f4033b6684"
+    },
+    "test_ntpath": {
+      "cases": 82,
+      "digest": "49e13ffe1f5667298c34fe5630ef392d48c59fd1057488c58f4e130d19f90863"
+    },
+    "test_operator": {
+      "cases": 100,
+      "digest": "a1348dfc7a345a7842c8f7119895878bcca90a3bd1277aedf4a51679fed6d0b8"
+    },
+    "test_optparse": {
+      "cases": 152,
+      "digest": "cf54b09f4033bf1ebe0108532cc12139cd56bc29a5edd7f97bf96a040f26c1be"
+    },
+    "test_pickletools": {
+      "cases": 137,
+      "digest": "584ef420558c7acf3ec34748c3cb03f2240fa5a57ac524f9bc6e7c96d320f653"
+    },
+    "test_pkgutil": {
+      "cases": 24,
+      "digest": "c06053be2e6761262b409ccc1b0cae0d33922c7fc15f09747a3f6477db0d977f"
+    },
+    "test_plistlib": {
+      "cases": 57,
+      "digest": "64bdeedf6cafcaadff555b0cd01bebb229fd9daedb4c8320e94bb23daf90ea9d"
+    },
+    "test_pprint": {
+      "cases": 44,
+      "digest": "6166246b1a2b3900044c7e52d76e2687a8ee592455f941059177ffc87b149d9b"
+    },
+    "test_profile": {
+      "cases": 6,
+      "digest": "cb1d748d0050a7ef8d078a6be805db8fbf048598ef9c5518ffb302254a0e587b"
+    },
+    "test_pstats": {
+      "cases": 9,
+      "digest": "83a0a0a15cdeecc36b9a44c947b063a2eb371a67cd0271c62110f139933a50f4"
+    },
+    "test_py_compile": {
+      "cases": 32,
+      "digest": "575c80262dbf37031b2f14202d471b8c6f0cc9b22bc165d4065829e95bd5129a"
+    },
+    "test_pyclbr": {
+      "cases": 6,
+      "digest": "d3c9137ae301ff9cb4c7221e246244d73ab41adaf2c65b136788f45b48551e37"
+    },
+    "test_queue": {
+      "cases": 54,
+      "digest": "1b50c4b95858206de8314af198c8aa5874b39f52a631ccf70dde8e8bd93a326e"
+    },
+    "test_quopri": {
+      "cases": 11,
+      "digest": "5d842b41e41eda22b62e242014d54bd83ecd80e461493692185911c495e50f5a"
+    },
+    "test_random": {
+      "cases": 101,
+      "digest": "9e74916246da7944b8a196ab56dcb3da69a1d3dd8049502893bc77eff621f792"
+    },
+    "test_range": {
+      "cases": 28,
+      "digest": "68f3ab8a38ffb6d7d03de1d6b477e2928d47675aeca3e3505345e57d50f4e296"
+    },
+    "test_reprlib": {
+      "cases": 27,
+      "digest": "56af9a04edc765ccc2b7dc578d24d455d75e773041993cde08bea5d3b6eca261"
+    },
+    "test_sched": {
+      "cases": 11,
+      "digest": "03ce4d52fcd0282d6158e7ba189a4c3d7a392c88f366283c2176add3436b1129"
+    },
+    "test_secrets": {
+      "cases": 11,
+      "digest": "d7a41cb517ed424708840076f1135c85abd5403903480603afb5493f2f0ca469"
+    },
+    "test_shlex": {
+      "cases": 18,
+      "digest": "78609102c273036b1fab27e801c88f040008f2f7a5d67ad167933553280f45af"
+    },
+    "test_string": {
+      "cases": 38,
+      "digest": "34eb969a8a99eeabf5697bda467ae570d6861fec607b510c433b476890346a3c"
+    },
+    "test_stringprep": {
+      "cases": 1,
+      "digest": "71a82c9cc117517cbc7215047a176cf75a4b292d51121be52b10d1f03f16236c"
+    },
+    "test_symtable": {
+      "cases": 27,
+      "digest": "131a03afc5f1370cefc85e23c5f46aee5fef1b7cc86f261d8a96ef6934147e59"
+    },
+    "test_textwrap": {
+      "cases": 66,
+      "digest": "94e542fa069e53e9e1a7d3fcfe268babc76bcf372b81cedf6e71eaafad4d2232"
+    },
+    "test_timeit": {
+      "cases": 41,
+      "digest": "8e8b7f9118a3d7651c523eef5d8a1e17d28c4f6e5ebf2bfbf7da5406050245e6"
+    },
+    "test_tokenize": {
+      "cases": 106,
+      "digest": "dec3ad521c83c39a31f17e494ed364844358429d4aa9e3fd6956a36a097ca31f"
+    },
+    "test_tomllib": {
+      "cases": 13,
+      "digest": "77571b96e0e7f09516b62bd44fa48d652131d9108487d673a819c9675f7c55e5"
+    },
+    "test_types": {
+      "cases": 115,
+      "digest": "ce14b9ec7b6d68ede5ab8dffa677403549cca69cda4191bfe082f21702286f95"
+    },
+    "test_typing": {
+      "cases": 618,
+      "digest": "1376aa5be75f72c5c45560baa8e494225e8b107576879d9e44ee7826d5409a41"
+    },
+    "test_unicodedata": {
+      "cases": 29,
+      "digest": "aa6a9ba747acd9b5b676826db14c048a74863ec5b040d901d00aa695b3c17321"
+    },
+    "test_uuid": {
+      "cases": 72,
+      "digest": "35e7c8fa83a9e97b30f327623100899085379e1d9d3cc39a408287fc6e0f350d"
+    },
+    "test_warnings": {
+      "cases": 125,
+      "digest": "2d3a604473c942bd7e5c82c4a4d0153660f1f30f1a8abf98be18f731bb608ac0"
+    },
+    "test_xml_etree": {
+      "cases": 195,
+      "digest": "c5450fd3a5ace0e71eb2af50d74199a98c24622bb73cfbd3d140587adb05e2c3"
+    },
+    "test_zipimport": {
+      "cases": 73,
+      "digest": "70a1e5470e45e9dd1e30578b198a61f60a36ff19a96917e406541af4fb77c754"
+    }
+  },
+  "orders": [
+    [
+      1,
+      2,
+      4
+    ],
+    [
+      4,
+      2,
+      1
+    ]
+  ],
+  "packet_size": 8
+}

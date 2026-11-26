@@ -1,4 +1,4 @@
-name: CPython mixed worker
+name: Independent CPython worker
 
 on:
   workflow_call:
@@ -37,5 +37,5 @@ jobs:
           NODES: ${{ inputs.nodes }}
           SLOT: ${{ inputs.slot }}
         run: |
-          python3.12 -E -s -B mixed_pilot.py "$RUNNER_TEMP/Python-3.12.3.tar.xz" "$RUNNER_TEMP/mixed-results" \
+          python3.12 -E -s -B independent.py "$RUNNER_TEMP/Python-3.12.3.tar.xz" "$RUNNER_TEMP/independent-results" \
             --round "$ROUND" --nodes "$NODES" --slot "$SLOT"
