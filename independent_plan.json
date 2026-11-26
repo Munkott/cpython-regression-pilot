@@ -52,7 +52,6 @@
         "test_binascii",
         "test_bisect",
         "test_stringprep",
-        "test_uuid",
         "test_mimetypes",
         "test_linecache",
         "test_timeit",
@@ -129,7 +128,6 @@
         "test_reprlib",
         "test_abc",
         "test_binascii",
-        "test_uuid",
         "test_linecache",
         "test_optparse",
         "test_keyword",
@@ -169,7 +167,6 @@
         "test_list",
         "test_pstats",
         "test_abc",
-        "test_uuid",
         "test_keyword",
         "test_operator",
         "test_tomllib"
@@ -275,11 +272,13 @@
     "test_types": 0.82,
     "test_typing": 1.41,
     "test_unicodedata": 1.31,
-    "test_uuid": 0.5,
     "test_warnings": 2.75,
     "test_xml_etree": 1.1199999999999999,
     "test_zipimport": 0.87
   },
+  "excluded_environment": [
+    "test_uuid"
+  ],
   "excluded_over_quarter_reference_cpu": [
     "test_json"
   ],
@@ -523,10 +522,6 @@
     "test_unicodedata": {
       "cases": 29,
       "digest": "aa6a9ba747acd9b5b676826db14c048a74863ec5b040d901d00aa695b3c17321"
-    },
-    "test_uuid": {
-      "cases": 72,
-      "digest": "35e7c8fa83a9e97b30f327623100899085379e1d9d3cc39a408287fc6e0f350d"
     },
     "test_warnings": {
       "cases": 125,
