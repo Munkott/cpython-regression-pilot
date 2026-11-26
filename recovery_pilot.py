@@ -5,7 +5,6 @@ import http.client
 from multiprocessing import get_context
 import os
 from pathlib import Path
-import signal
 import time
 from uuid import uuid4
 from zipfile import ZIP_DEFLATED, ZipFile
@@ -14,7 +13,7 @@ import queue_run as worker
 import run
 from stream_pilot import REPO, digest, find, label, publish, unpack
 
-PLAN=next(q for q in worker.PLAN["cohorts"] if q["id"]=="fault24")
+PLAN=next(q for q in worker.PLAN["cohorts"] if q["id"]=="silence24")
 MODEL=worker.MODEL
 STATES=("normal-0","normal-1","fault-first","fault-peer","fault-next")
 
@@ -70,55 +69,68 @@ def choose_missing(role,parent):
     return [task for task in tasks if task["i"] not in admitted]
 
 
+def prepare(root):
+    dataset,wheel=worker.sweep.setup_host(root)
+    MODEL.load_numpy(wheel,root/"site")
+    worker.DATASET=dataset
+    worker.MODELS=root/"models"
+    worker.MODELS.mkdir()
+    worker.EXCLUDED=worker.excluded(dataset)
+    worker.SELECTION=worker.examples(dataset,"selection")
+    sample={k:row[2] for k,row in worker.SELECTION.items()}
+    return sample
+
+
+def execute(role,members):
+    capacity=min(len(members),len(os.sched_getaffinity(0)))
+    print(f"FIT_IDS {role} "+",".join(str(t["i"]) for t in members),flush=True)
+    with ProcessPoolExecutor(max_workers=capacity,mp_context=get_context("fork")) as pool:
+        results=list(pool.map(worker.train,members))
+    return sorted(results,key=lambda row:row["i"])
+
+
+def emit(root,role,release,run_id,commit,owner,started,prepared,sample,parent,members,results,grant=None):
+    start=started
+    capacity=min(len(members),len(os.sched_getaffinity(0)))
+    results.sort(key=lambda row:row["i"])
+    best=min(results,key=worker.winner_key)
+    suffix=f"{role}.zip"
+    bundle=root/suffix
+    with ZipFile(bundle,"w",compression=ZIP_DEFLATED,compresslevel=1) as writer:
+        writer.write(worker.MODELS/str(best["i"])/worker.sweep.WEIGHT,worker.sweep.WEIGHT)
+    assert bundle.stat().st_size<1_500_000
+    asset=worker.sweep.full_corpus.upload(release,bundle,os.environ["STREAM_CHECK_TOKEN"],commit)
+    receipt={"role":role,"run":run_id,"commit":commit,"release":release,
+             "plan_sha":worker.sweep.PLAN_SHA,"worker":owner,"parent":parent,"prepared":prepared,"rows":results,
+             "executed":[row["i"] for row in results],"selection_samples":sample,
+             "best":best["i"],"asset":asset,"bundle":suffix,"bundle_sha":run.digest(bundle),
+             "weights_sha":best["sha"],"bytes":bundle.stat().st_size,"total":MODEL.elapsed(start)}
+    receipt["generation"]=2 if role=="fault-next" else 1
+    if grant is not None:
+        receipt["grant"]=grant
+    role_label="checkpoint-"+role
+    receipt_id=publish((run_id,commit,role_label,2,0),receipt,title="Model recovery checkpoint")
+    return receipt_id
+
+
 def main():
     cli=argparse.ArgumentParser(description=__doc__)
     cli.add_argument("root",type=Path)
     cli.add_argument("role",choices=STATES)
     cli.add_argument("release",type=int)
     args=cli.parse_args()
+    if args.role not in ("normal-0","normal-1","fault-peer"):
+        cli.error("lease-controlled roles use silent_loss.py")
     assert (os.environ["GITHUB_REPOSITORY"],os.environ["GITHUB_EVENT_NAME"])==(REPO,"workflow_dispatch")
     assert os.environ["GITHUB_RUN_ATTEMPT"]=="1"
     run_id,commit=int(os.environ["GITHUB_RUN_ID"]),os.environ["GITHUB_SHA"]
-    owner=str(uuid4())
-    start=MODEL.clock()
+    started=MODEL.clock()
     args.root.mkdir()
-    parent=checkpoint(run_id,commit,args.release) if args.role=="fault-next" else None
-    members=choose_missing(args.role,parent)
-    dataset,wheel=worker.sweep.setup_host(args.root)
-    MODEL.load_numpy(wheel,args.root/"site")
-    worker.DATASET=dataset
-    worker.MODELS=args.root/"models"
-    worker.MODELS.mkdir()
-    worker.EXCLUDED=worker.excluded(dataset)
-    worker.SELECTION=worker.examples(dataset,"selection")
-    sample={k:row[2] for k,row in worker.SELECTION.items()}
-    if parent:
-        assert sample==parent["selection_samples"]
+    members=assign(args.role)
+    sample=prepare(args.root)
     prepared=run.utc()
-    capacity=min(len(members),len(os.sched_getaffinity(0)))
-    print(f"FIT_IDS {args.role} "+",".join(str(t["i"]) for t in members),flush=True)
-    with ProcessPoolExecutor(max_workers=capacity,mp_context=get_context("fork")) as pool:
-        results=list(pool.map(worker.train,members))
-    results.sort(key=lambda row:row["i"])
-    best=min(results,key=worker.winner_key)
-    suffix=f"{args.role}.zip"
-    bundle=args.root/suffix
-    with ZipFile(bundle,"w",compression=ZIP_DEFLATED,compresslevel=1) as writer:
-        writer.write(worker.MODELS/str(best["i"])/worker.sweep.WEIGHT,worker.sweep.WEIGHT)
-    assert bundle.stat().st_size<1_500_000
-    asset=worker.sweep.full_corpus.upload(args.release,bundle,os.environ["STREAM_CHECK_TOKEN"],commit)
-    receipt={"role":args.role,"run":run_id,"commit":commit,"release":args.release,
-             "plan_sha":worker.sweep.PLAN_SHA,"worker":owner,"parent":parent,"prepared":prepared,"rows":results,
-             "executed":[row["i"] for row in results],"selection_samples":sample,
-             "best":best["i"],"asset":asset,"bundle":suffix,"bundle_sha":run.digest(bundle),
-             "weights_sha":best["sha"],"bytes":bundle.stat().st_size,"total":MODEL.elapsed(start)}
-    role_label="checkpoint-"+args.role
-    receipt_id=publish((run_id,commit,role_label,2,0),receipt,title="Model recovery checkpoint")
-    if args.role=="fault-first":
-        readback=checkpoint(run_id,commit,args.release)
-        assert readback["id"]==receipt_id and readback["worker"]==owner
-        print(f"CONFIRMED_BEFORE_KILL {receipt_id}",flush=True)
-        os.kill(os.getpid(),signal.SIGKILL)
+    results=execute(args.role,members)
+    emit(args.root,args.role,args.release,run_id,commit,str(uuid4()),started,prepared,sample,None,members,results)
 
 
 if __name__=="__main__":

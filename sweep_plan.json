@@ -71,6 +71,17 @@
       ],
       "recovery_shard": 0,
       "size": 24
+    },
+    {
+      "checkpoint_candidates": 6,
+      "id": "silence24",
+      "lease_s": 18,
+      "order": [
+        2
+      ],
+      "poll_s": 2,
+      "recovery_shard": 0,
+      "size": 24
     }
   ],
   "deadline_s": 7200,

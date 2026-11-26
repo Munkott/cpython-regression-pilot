@@ -1,4 +1,4 @@
-name: Model queue recovery with an independent successor
+name: Model queue recovery after heartbeat silence
 run-name: Model recovery ${{ inputs.mode }} r${{ inputs.release_id }}
 
 on:
@@ -48,7 +48,6 @@ jobs:
   fault-next:
     name: fault-next
     if: inputs.mode == 'fault'
-    needs: fault-first
     uses: ./.github/workflows/model-recovery-worker.yml
     with:
       role: fault-next

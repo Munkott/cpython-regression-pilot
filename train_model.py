@@ -208,7 +208,7 @@ def choose_parameters(checkpoint):
     return params
 
 
-def fit(dataset, output, *, exclude_documents=()):
+def fit(dataset, output, *, exclude_documents=(), on_first_step=None):
     started = clock()
     train = load_corpus(dataset, "train")
     if exclude_documents:
@@ -241,6 +241,8 @@ def fit(dataset, output, *, exclude_documents=()):
             second *= b2
             second += (1 - b2) * grad**2
             params[key] -= lr * (first / (1 - b1**step)) / (np.sqrt(second / (1 - b2**step)) + epsilon)
+        if step == 1 and on_first_step is not None:
+            on_first_step()
         if step == 1 or step % 128 == 0:
             trained.append({"step":step, "train_nll":nll})
             print(f"step {step} train_nll={nll:.5f}",flush=True)

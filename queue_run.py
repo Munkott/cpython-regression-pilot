@@ -64,12 +64,12 @@ def winner_key(row):
     return sum(row["scores"].values()),row["i"]
 
 
-def train(task):
+def train(task, on_first_step=None):
     MODEL.PLAN=dict(sweep.BASE,seed_initial=task["seed"],learning_rate=task["lr"],seed_train=task["train_seed"])
     folder=MODELS/str(task["i"])
     folder.mkdir()
     start=MODEL.clock()
-    report=MODEL.fit(DATASET,folder,exclude_documents=EXCLUDED)
+    report=MODEL.fit(DATASET,folder,exclude_documents=EXCLUDED,on_first_step=on_first_step)
     params=MODEL.choose_parameters(folder/sweep.WEIGHT)
     row=dict(task,scores=scores(params,SELECTION),sha=report["checkpoint_sha256"],
              train_sha=report["train_positions_sha256"],wall=MODEL.elapsed(start),finished=run.utc())
