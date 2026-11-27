@@ -16,12 +16,13 @@ jobs:
           python3 -B node_bench.py install
           python3 -B fixtures.py docs 2400 --offset 5000
           python3 -B partition_inputs.py
+          cp docs/truth.json truth.json
           tar -cf runtime.tar tess
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: benchmark-runtime
           path: |
-            docs/truth.json
+            truth.json
             runtime.tar
           retention-days: 1
           compression-level: 1
