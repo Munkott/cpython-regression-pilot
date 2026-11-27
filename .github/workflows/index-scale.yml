@@ -1,0 +1,150 @@
+name: CPython source index scaling benchmark
+on:
+  push:
+    branches: ["bench/index-scale-20261127"]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Prepare public CPython release inputs at fixed versions
+        shell: bash
+        run: |
+          git init --quiet --bare repository.git
+          git -C repository.git fetch --quiet --depth=1 --no-tags https://github.com/python/cpython.git 937828f5194d4d839c68f946dcf416ca8b367735 ebf955df7a89ed0c7968f79faec1de49f61ed7cb
+          python3 -B hosted.py prepare
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: task-inputs
+          path: inputs/
+          retention-days: 1
+          compression-level: 0
+  small1:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: task-inputs
+          path: inputs/
+      - name: Compute and check assigned source objects
+        run: python3 -B hosted.py worker --phase small1 --slot ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-small1-${{ matrix.slot }}
+          path: out/receipt.json
+          retention-days: 1
+  large1:
+    needs: small1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: task-inputs
+          path: inputs/
+      - name: Compute and check assigned source objects
+        run: python3 -B hosted.py worker --phase large1 --slot ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-large1-${{ matrix.slot }}
+          path: out/receipt.json
+          retention-days: 1
+  large2:
+    needs: large1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: task-inputs
+          path: inputs/
+      - name: Compute and check assigned source objects
+        run: python3 -B hosted.py worker --phase large2 --slot ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-large2-${{ matrix.slot }}
+          path: out/receipt.json
+          retention-days: 1
+  large4:
+    needs: large2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: task-inputs
+          path: inputs/
+      - name: Compute and check assigned source objects
+        run: python3 -B hosted.py worker --phase large4 --slot ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-large4-${{ matrix.slot }}
+          path: out/receipt.json
+          retention-days: 1
+  large8:
+    needs: large4
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: task-inputs
+          path: inputs/
+      - name: Compute and check assigned source objects
+        run: python3 -B hosted.py worker --phase large8 --slot ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-large8-${{ matrix.slot }}
+          path: out/receipt.json
+          retention-days: 1
+  large1b:
+    needs: large8
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: task-inputs
+          path: inputs/
+      - name: Compute and check assigned source objects
+        run: python3 -B hosted.py worker --phase large1b --slot ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-large1b-${{ matrix.slot }}
+          path: out/receipt.json
+          retention-days: 1
