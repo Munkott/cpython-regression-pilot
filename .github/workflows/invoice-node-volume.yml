@@ -1,0 +1,219 @@
+name: Overhead SI larger batches with partitioned inputs
+on:
+  push:
+    branches: ["bench/invoice-node-volume-20261127"]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Prepare an input partition per shard
+        run: |
+          command -v pdftoppm || { sudo apt-get update && sudo apt-get install -y poppler-utils; }
+          python3 -B node_bench.py install
+          python3 -B fixtures.py docs 2400 --offset 5000
+          python3 -B partition_inputs.py
+          tar -cf runtime.tar tess
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-runtime
+          path: |
+            docs/truth.json
+            runtime.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-0
+          path: shard-0.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-1
+          path: shard-1.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-2
+          path: shard-2.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-3
+          path: shard-3.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-4
+          path: shard-4.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-5
+          path: shard-5.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-6
+          path: shard-6.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: benchmark-shard-7
+          path: shard-7.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+  nodes1:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: benchmark-runtime
+      - name: Choose the input partitions for this shard
+        id: slice
+        shell: bash
+        run: |
+          case 1 in
+            1) pattern='benchmark-shard-*' ;;
+            4) pattern="benchmark-shard-{${{ matrix.slot }},$((4+${{ matrix.slot }}))}" ;;
+            8) pattern='benchmark-shard-${{ matrix.slot }}' ;;
+          esac
+          echo "pattern=$pattern" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          pattern: ${{ steps.slice.outputs.pattern }}
+          path: input-slices
+          merge-multiple: true
+      - name: Prepare inputs
+        shell: bash
+        run: |
+          command -v pdftotext || { sudo apt-get update && sudo apt-get install -y poppler-utils; }
+          test "$(find input-slices -type f -name 'shard-*.tar' | wc -l)" = "$((8 / 1))"
+          mkdir docs
+          mv truth.json docs/
+          for bundle in input-slices/shard-*.tar; do tar -xf "$bundle" -C docs; done
+          tar -xf runtime.tar
+      - name: Extract fields on two CPUs
+        run: python3 -B node_bench.py shard docs receipt.json 1 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nodes1-${{ matrix.slot }}
+          path: receipt.json
+          if-no-files-found: error
+          retention-days: 1
+  nodes4:
+    needs: nodes1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: benchmark-runtime
+      - name: Choose the input partitions for this shard
+        id: slice
+        shell: bash
+        run: |
+          case 4 in
+            1) pattern='benchmark-shard-*' ;;
+            4) pattern="benchmark-shard-{${{ matrix.slot }},$((4+${{ matrix.slot }}))}" ;;
+            8) pattern='benchmark-shard-${{ matrix.slot }}' ;;
+          esac
+          echo "pattern=$pattern" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          pattern: ${{ steps.slice.outputs.pattern }}
+          path: input-slices
+          merge-multiple: true
+      - name: Prepare inputs
+        shell: bash
+        run: |
+          command -v pdftotext || { sudo apt-get update && sudo apt-get install -y poppler-utils; }
+          test "$(find input-slices -type f -name 'shard-*.tar' | wc -l)" = "$((8 / 4))"
+          mkdir docs
+          mv truth.json docs/
+          for bundle in input-slices/shard-*.tar; do tar -xf "$bundle" -C docs; done
+          tar -xf runtime.tar
+      - name: Extract fields on two CPUs
+        run: python3 -B node_bench.py shard docs receipt.json 4 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nodes4-${{ matrix.slot }}
+          path: receipt.json
+          if-no-files-found: error
+          retention-days: 1
+  nodes8:
+    needs: nodes4
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: benchmark-runtime
+      - name: Choose the input partitions for this shard
+        id: slice
+        shell: bash
+        run: |
+          case 8 in
+            1) pattern='benchmark-shard-*' ;;
+            4) pattern="benchmark-shard-{${{ matrix.slot }},$((4+${{ matrix.slot }}))}" ;;
+            8) pattern='benchmark-shard-${{ matrix.slot }}' ;;
+          esac
+          echo "pattern=$pattern" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          pattern: ${{ steps.slice.outputs.pattern }}
+          path: input-slices
+          merge-multiple: true
+      - name: Prepare inputs
+        shell: bash
+        run: |
+          command -v pdftotext || { sudo apt-get update && sudo apt-get install -y poppler-utils; }
+          test "$(find input-slices -type f -name 'shard-*.tar' | wc -l)" = "$((8 / 8))"
+          mkdir docs
+          mv truth.json docs/
+          for bundle in input-slices/shard-*.tar; do tar -xf "$bundle" -C docs; done
+          tar -xf runtime.tar
+      - name: Extract fields on two CPUs
+        run: python3 -B node_bench.py shard docs receipt.json 8 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: nodes8-${{ matrix.slot }}
+          path: receipt.json
+          if-no-files-found: error
+          retention-days: 1
