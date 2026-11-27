@@ -1,0 +1,181 @@
+name: Overhead SI warm training queues
+on:
+  push:
+    branches: ["bench/warm-training-queues-20261127"]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build and verify public input
+        run: python3.12 -B transport.py prepare runner-prep bundle
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: queue-input
+          path: bundle/
+          retention-days: 1
+          compression-level: 1
+  cold_q144:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Run a new worker for this queue
+        run: python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q144
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-cold-q144-${{ matrix.slot }}
+          path: worker/q144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-cold-q144-${{ matrix.slot }}
+          path: worker/q144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+  warm:
+    needs: cold_q144
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Start the persistent queue worker
+        shell: bash
+        run: |
+          mkdir -p worker
+          python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q144 repeat144 q72 > worker/stdout.log 2>&1 &
+          echo $! > worker/worker.pid
+      - name: Wait for q144 scores and checkpoint
+        shell: bash
+        run: python3.12 -B warm_worker.py wait worker q144 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-warm-q144-${{ matrix.slot }}
+          path: worker/q144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-warm-q144-${{ matrix.slot }}
+          path: worker/q144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Wait for repeat144 scores and checkpoint
+        shell: bash
+        run: python3.12 -B warm_worker.py wait worker repeat144 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-warm-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-warm-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Wait for q72 scores and checkpoint
+        shell: bash
+        run: python3.12 -B warm_worker.py wait worker q72 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-warm-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-warm-q72-${{ matrix.slot }}
+          path: worker/q72/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+  cold_repeat144:
+    needs: warm
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Run a new worker for this queue
+        run: python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} repeat144
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-cold-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-cold-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+  cold_q72:
+    needs: cold_repeat144
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Run a new worker for this queue
+        run: python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q72
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-cold-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-cold-q72-${{ matrix.slot }}
+          path: worker/q72/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1

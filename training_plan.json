@@ -1,0 +1,47 @@
+{
+  "adam_beta1": 0.9,
+  "adam_beta2": 0.999,
+  "adam_epsilon": 1e-08,
+  "architecture": "16-token-context neural language model with a two-stage softmax covering the full r50k_base vocabulary",
+  "batch": 128,
+  "benchmark_scope": "One fixed training sequence from random initialization. Compare a warmed local corpus, end-to-end hosted corpus then PC training, and hosted corpus plus training then verified weight transfer.",
+  "context": 16,
+  "corpus": {
+    "manifest_sha256": "febdc4187e744347007bb67172a7279132e0ee56e06f7ded952233859ec98c43",
+    "preparation_plan_sha256": "3be4b4d5b06900734b33a1cb691d200dd860d3b32a8d5ef041694a40aa215f0f",
+    "splits": {
+      "train": {
+        "bytes": 35956916,
+        "file": "train.u16",
+        "sha256": "b06940a1a4ee811932e78104c86662a5f6372399c717c39547790e3f85c92e40",
+        "tokens": 17978458
+      },
+      "validation": {
+        "bytes": 2510124,
+        "file": "validation.u16",
+        "sha256": "535c9906176fccfb3e75ece01799b0909ec2ba2dcf3bdba2fc70332e4c21402e",
+        "tokens": 1255062
+      }
+    }
+  },
+  "embedding": 24,
+  "eval_samples": 8192,
+  "group_stride": 256,
+  "hidden": 96,
+  "learning_rate": 0.0025,
+  "numpy": {
+    "max_bytes": 17000000,
+    "sha256": "fd83c01228a688733f1ded5201c678f0c53ecc1006ffbc404db9f7a899ac6249",
+    "url": "https://files.pythonhosted.org/packages/8c/3d/1e1db36cfd41f895d266b103df00ca5b3cbe965184df824dec5c08c6b803/numpy-2.2.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+    "version": "2.2.6"
+  },
+  "quality_min_delta_nll": 0.1,
+  "seed_eval": 20261126,
+  "seed_initial": 20261124,
+  "seed_shuffle": 20261127,
+  "seed_train": 20261125,
+  "steps": 1024,
+  "validation_nll_abs_tolerance": 1e-09,
+  "vocab": 50257,
+  "weight_abs_tolerance": 1e-08
+}

@@ -1,0 +1,207 @@
+{
+  "dataset": "NLTK Gutenberg",
+  "dataset_license": "public domain (NLTK catalog)",
+  "documents": [
+    {
+      "batch": 0,
+      "codec": "utf-8",
+      "entry": "gutenberg/austen-emma.txt",
+      "sha256": "71b0923d75fcf2f1faa897b22da8de8e2476d7478a2b22388eb58a3420e00215",
+      "size": 887071,
+      "slot": 3,
+      "split": "train"
+    },
+    {
+      "batch": 1,
+      "codec": "utf-8",
+      "entry": "gutenberg/austen-persuasion.txt",
+      "sha256": "cec097657cbfeb62aafe178973f514fa07ab66a5e28ea025ebd5d51ca870e40f",
+      "size": 466292,
+      "slot": 3,
+      "split": "train"
+    },
+    {
+      "batch": 2,
+      "codec": "utf-8",
+      "entry": "gutenberg/austen-sense.txt",
+      "sha256": "57b169c7cfa502896dee25bd66616f61cc1d21084caf31f015176ee46fda9718",
+      "size": 673022,
+      "slot": 2,
+      "split": "train"
+    },
+    {
+      "batch": 3,
+      "codec": "utf-8",
+      "entry": "gutenberg/bible-kjv.txt",
+      "sha256": "3f56c9f0bbc796312aacc5fcb49a799f5c5f729f00db3f86bff26319a93bfede",
+      "size": 4332554,
+      "slot": 0,
+      "split": "train"
+    },
+    {
+      "batch": 0,
+      "codec": "utf-8",
+      "entry": "gutenberg/blake-poems.txt",
+      "sha256": "840897a66e23a47dd1fd56b864f421b2be0af074dc081244f7995bf26939eee9",
+      "size": 38153,
+      "slot": 2,
+      "split": "train"
+    },
+    {
+      "batch": 1,
+      "codec": "utf-8",
+      "entry": "gutenberg/bryant-stories.txt",
+      "sha256": "c87f2c50a00055010f02edb6bb643aabe2473465da7f62db43cb4cda1a1c768d",
+      "size": 249439,
+      "slot": 2,
+      "split": "train"
+    },
+    {
+      "batch": 2,
+      "codec": "utf-8",
+      "entry": "gutenberg/burgess-busterbrown.txt",
+      "sha256": "7d8b1648ffeaa7268819c62852e5653f2f295528411c8c895ce3941581146331",
+      "size": 84663,
+      "slot": 1,
+      "split": "train"
+    },
+    {
+      "batch": 3,
+      "codec": "utf-8",
+      "entry": "gutenberg/carroll-alice.txt",
+      "sha256": "5ce9042c0d8536b072b61d4c7c4e6d70c72d9dbb5f3d816261326d9280749266",
+      "size": 144395,
+      "slot": 1,
+      "split": "train"
+    },
+    {
+      "batch": 0,
+      "codec": "latin-1",
+      "entry": "gutenberg/chesterton-ball.txt",
+      "sha256": "c6b6d4e8c09a3f49a09f37f4e47663d4d6f048b62d86c70ccafdfd8f27059a58",
+      "size": 457450,
+      "slot": 2,
+      "split": "validation"
+    },
+    {
+      "batch": 1,
+      "codec": "utf-8",
+      "entry": "gutenberg/chesterton-brown.txt",
+      "sha256": "67027976205b4b30e367c704807f56c8ffac3e8ea6037d993e57ab1fe28447ec",
+      "size": 406629,
+      "slot": 1,
+      "split": "validation"
+    },
+    {
+      "batch": 2,
+      "codec": "utf-8",
+      "entry": "gutenberg/chesterton-thursday.txt",
+      "sha256": "8b431a2a8db84089cd6f83fa66610c3b12c04114609df6e90137c0c58f2c5493",
+      "size": 320525,
+      "slot": 3,
+      "split": "validation"
+    },
+    {
+      "batch": 3,
+      "codec": "utf-8",
+      "entry": "gutenberg/edgeworth-parents.txt",
+      "sha256": "543b2162782f839b9917b88956acbd7507df37c543286c16c228b36dda0cf950",
+      "size": 935158,
+      "slot": 2,
+      "split": "train"
+    },
+    {
+      "batch": 0,
+      "codec": "utf-8",
+      "entry": "gutenberg/melville-moby_dick.txt",
+      "sha256": "dc2466ee3c2e6e2ea1f86233d142e4b5578fdc1d6f0ca657bee7572202a980c7",
+      "size": 1242990,
+      "slot": 1,
+      "split": "train"
+    },
+    {
+      "batch": 1,
+      "codec": "utf-8",
+      "entry": "gutenberg/milton-paradise.txt",
+      "sha256": "49028a77c557de1459e96c026edbe72997be2d9015925f7baefb793cd6fe706f",
+      "size": 468220,
+      "slot": 1,
+      "split": "train"
+    },
+    {
+      "batch": 2,
+      "codec": "latin-1",
+      "entry": "gutenberg/shakespeare-caesar.txt",
+      "sha256": "7c46bd32fc84d9596bcad55b61ec3c1a390239acb190b286422855aafc2774b3",
+      "size": 112310,
+      "slot": 2,
+      "split": "validation"
+    },
+    {
+      "batch": 3,
+      "codec": "utf-8",
+      "entry": "gutenberg/shakespeare-hamlet.txt",
+      "sha256": "1eceab7027ad7e0cc25c6b6aadcb2e6bb070395cb2085f775ac732d63d5db240",
+      "size": 162881,
+      "slot": 1,
+      "split": "validation"
+    },
+    {
+      "batch": 0,
+      "codec": "utf-8",
+      "entry": "gutenberg/shakespeare-macbeth.txt",
+      "sha256": "d4a204352cfe5924cbae76f764225d120e9f7617d39cb8c949dedd3f306353ac",
+      "size": 100351,
+      "slot": 3,
+      "split": "validation"
+    },
+    {
+      "batch": 1,
+      "codec": "utf-8",
+      "entry": "gutenberg/whitman-leaves.txt",
+      "sha256": "93ebaf1dccc8f1514b4b1c2f52e64e81829113fc58cff63fb51ada0c72f99c3e",
+      "size": 711215,
+      "slot": 3,
+      "split": "train"
+    }
+  ],
+  "gates": {
+    "batching": "Four disjoint batches with one controller. Report time from before trigger through checked receipt of each batch and assembled dataset.",
+    "coverage": "18 of 18 document records, zero missing or repeated receipts",
+    "equality": "Every document count, SHA256 and token window agrees with an independent complete local run. Final train and validation bytes agree."
+  },
+  "input_catalog": "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/index.xml",
+  "inputs": {
+    "gutenberg-api.zip": {
+      "sha256": "2d3c3ab548c653944310f37f536443ec85d0a0ad855fcae217a0c9efdce2d611",
+      "size": 4251829,
+      "urls": [
+        "https://api.github.com/repos/nltk/nltk_data/contents/packages/corpora/gutenberg.zip?ref=gh-pages",
+        "https://raw.githubusercontent.com/nltk/nltk_data/gh-pages/packages/corpora/gutenberg.zip"
+      ]
+    },
+    "r50k_base.tiktoken": {
+      "sha256": "306cd27f03c1a714eca7108e03d66b7dc042abe8c258b44c199a7ed9838dd930",
+      "size": 835554,
+      "urls": [
+        "https://openaipublic.blob.core.windows.net/encodings/r50k_base.tiktoken"
+      ]
+    },
+    "regex.whl": {
+      "sha256": "70b7fa6606c2881c1db9479b0eaa11ed5dfa11c8d60a474ff0e095099f39d98e",
+      "size": 796896,
+      "urls": [
+        "https://files.pythonhosted.org/packages/fb/13/e3b075031a738c9598c51cfbc4c7879e26729c53aa9cca59211c44235314/regex-2024.11.6-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+      ]
+    },
+    "tiktoken.whl": {
+      "sha256": "99376e1370d59bcf6935c933cb9ba64adc29033b7e73f5f7569f3aad86552b22",
+      "size": 1196678,
+      "urls": [
+        "https://files.pythonhosted.org/packages/1b/40/da42522018ca496432ffd02793c3a72a739ac04c3794a4914570c9bb2925/tiktoken-0.9.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+      ]
+    }
+  },
+  "samples_per_document": 4,
+  "window_tokens": 1024
+}

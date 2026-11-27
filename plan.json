@@ -1,0 +1,57 @@
+{
+  "frozen_at_utc": "2026-11-24T15:04:53.298026+00:00",
+  "source": "https://www.python.org/ftp/python/3.12.3/Python-3.12.3.tar.xz",
+  "publish_page": "https://www.python.org/downloads/release/python-3123/",
+  "source_bytes": 20625068,
+  "published_md5": "8defb33f0c37aa4bdd3a38ba52abde4e",
+  "source_sha256": "56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1",
+  "interpreter_version": [
+    3,
+    12,
+    3
+  ],
+  "modules": [
+    "test_decimal",
+    "test_sqlite3",
+    "test_re",
+    "test_itertools",
+    "test_functools",
+    "test_gzip",
+    "test_statistics",
+    "test_codecs",
+    "test_struct",
+    "test_csv",
+    "test_lzma"
+  ],
+  "module_timeout_s": 60,
+  "campaign_budget_s": 420,
+  "local_worker_orders": [
+    [
+      1,
+      2,
+      4
+    ],
+    [
+      4,
+      1,
+      2
+    ],
+    [
+      2,
+      4,
+      1
+    ]
+  ],
+  "random_seed": 20261124,
+  "admission": "Every planned module must have a canonical JUnit case list, at least one pass, zero failures/errors, and exact agreement on IDs and statuses against a separately collected stock regrtest run. Skip cases are recorded, not treated as passes.",
+  "scope": "Local direct execution and a reusable external job. Absolute timings include scheduling, processes and per-task durable writes after setup. Report setup, end-to-end excluding source acquisition, and no external performance claims until live observation.",
+  "initial_plan_sha256": "54eacdbc5cb98998843f4c26acd86ea6ad15bc89d9cda794ab1f8b5df741b849",
+  "selection_rule": "Retain modules that reported no failure and completed before the 90-second reference limit on this host. A later whole-cohort run must publish a complete JUnit reference and independent batches.",
+  "excluded_after_initial_reference": {
+    "test_zipfile": "1 error, 1 failure",
+    "test_pickle": "6 errors",
+    "test_json": "running at deadline",
+    "test_tarfile": "not reached before deadline",
+    "test_bz2": "not reached before deadline"
+  }
+}
