@@ -1,0 +1,108 @@
+name: Overhead SI training queue scaling
+on:
+  push:
+    branches: ["bench/training-scale-q144-20261127"]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build and verify the fixed public corpus
+        run: python3.12 -B transport.py prepare runner-prep bundle
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: queue-input
+          path: bundle/
+          retention-days: 1
+          compression-level: 1
+  n1:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Evaluate the assigned candidates
+        run: python3.12 -B transport.py worker 'worker-scratch' bundle receipt 1 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-n1-${{ matrix.slot }}
+          path: receipt/
+          retention-days: 1
+          compression-level: 1
+  n2:
+    needs: n1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Evaluate the assigned candidates
+        run: python3.12 -B transport.py worker 'worker-scratch' bundle receipt 2 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-n2-${{ matrix.slot }}
+          path: receipt/
+          retention-days: 1
+          compression-level: 1
+  n4:
+    needs: n2
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Evaluate the assigned candidates
+        run: python3.12 -B transport.py worker 'worker-scratch' bundle receipt 4 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-n4-${{ matrix.slot }}
+          path: receipt/
+          retention-days: 1
+          compression-level: 1
+  n8:
+    needs: n4
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Evaluate the assigned candidates
+        run: python3.12 -B transport.py worker 'worker-scratch' bundle receipt 8 ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: result-n8-${{ matrix.slot }}
+          path: receipt/
+          retention-days: 1
+          compression-level: 1
