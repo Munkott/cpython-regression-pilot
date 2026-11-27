@@ -1,0 +1,263 @@
+name: Overhead SI selected training weights
+on:
+  push:
+    branches: ["bench/winner-only-20261127"]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Build and verify public input
+        run: python3.12 -B transport.py prepare runner-prep bundle
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: queue-input
+          path: bundle/
+          retention-days: 1
+          compression-level: 1
+  eager:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Start persistent training
+        shell: bash
+        run: |
+          mkdir -p worker
+          python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q144 repeat144 q72 > worker/stdout.log 2>&1 &
+          echo $! > worker/worker.pid
+      - name: Wait for q144
+        run: python3.12 -B warm_worker.py wait worker q144 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-eager-q144-${{ matrix.slot }}
+          path: worker/q144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-eager-q144-${{ matrix.slot }}
+          path: worker/q144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Wait for repeat144
+        run: python3.12 -B warm_worker.py wait worker repeat144 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-eager-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-eager-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Wait for q72
+        run: python3.12 -B warm_worker.py wait worker q72 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-eager-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-eager-q72-${{ matrix.slot }}
+          path: worker/q72/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+  selective:
+    needs: eager
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Start persistent training
+        shell: bash
+        run: |
+          mkdir -p worker
+          python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q144 repeat144 q72 > worker/stdout.log 2>&1 &
+          echo $! > worker/worker.pid
+      - name: Wait for q144
+        run: python3.12 -B warm_worker.py wait worker q144 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-selective-q144-${{ matrix.slot }}
+          path: worker/q144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Select the winning slot for q144
+        if: matrix.slot == 0
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py choose selective q144 worker 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.slot == 0
+        with:
+          name: decision-selective-q144
+          path: worker/q144/decision.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Grant publication for q144
+        id: publish_q144
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py admit selective q144 worker ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: steps.publish_q144.outputs.publish == 'yes'
+        with:
+          name: weights-selective-q144-${{ matrix.slot }}
+          path: worker/q144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Wait for repeat144
+        run: python3.12 -B warm_worker.py wait worker repeat144 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-selective-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Select the winning slot for repeat144
+        if: matrix.slot == 0
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py choose selective repeat144 worker 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.slot == 0
+        with:
+          name: decision-selective-repeat144
+          path: worker/repeat144/decision.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Grant publication for repeat144
+        id: publish_repeat144
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py admit selective repeat144 worker ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: steps.publish_repeat144.outputs.publish == 'yes'
+        with:
+          name: weights-selective-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Wait for q72
+        run: python3.12 -B warm_worker.py wait worker q72 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-selective-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Select the winning slot for q72
+        if: matrix.slot == 0
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py choose selective q72 worker 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.slot == 0
+        with:
+          name: decision-selective-q72
+          path: worker/q72/decision.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Grant publication for q72
+        id: publish_q72
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py admit selective q72 worker ${{ matrix.slot }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: steps.publish_q72.outputs.publish == 'yes'
+        with:
+          name: weights-selective-q72-${{ matrix.slot }}
+          path: worker/q72/weights/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-selective-${{ matrix.slot }}
+          path: worker/control/
+          retention-days: 1
+          if-no-files-found: error
+  fault:
+    needs: selective
+    runs-on: ubuntu-24.04
+    timeout-minutes: 13
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Start persistent training
+        shell: bash
+        run: |
+          mkdir -p worker
+          python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q72 > worker/stdout.log 2>&1 &
+          echo $! > worker/worker.pid
+      - name: Wait for q72
+        run: python3.12 -B warm_worker.py wait worker q72 || { tail -40 worker/stdout.log; exit 1; }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-fault-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 1
+      - name: Select the winning slot for q72
+        if: matrix.slot == 0
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py choose fault q72 worker 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.slot == 0
+        with:
+          name: decision-fault-q72
+          path: worker/q72/decision.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Grant publication for q72
+        id: publish_q72
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B selector.py admit fault q72 worker ${{ matrix.slot }}
