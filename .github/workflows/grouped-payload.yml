@@ -1,0 +1,191 @@
+name: Overhead SI grouped weight delivery sizes
+on:
+  push:
+    branches: ["bench/grouped-payload-scale-20261127"]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Prepare fixed public corpus
+        run: python3.12 -B transport.py prepare runner-prep bundle
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: queue-input
+          path: bundle/
+          retention-days: 1
+          compression-level: 1
+  bulk:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Start one worker for three queues
+        shell: bash
+        run: |
+          mkdir -p worker
+          python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q144 repeat144 q72 > worker/stdout.log 2>&1 &
+          echo $! > worker/worker.pid
+      - name: Wait for q144
+        run: python3.12 -B warm_worker.py wait worker q144 || { tail -40 worker/stdout.log; exit 1; }
+      - name: Publish scores for q144
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-bulk-q144-${{ matrix.slot }}
+          path: worker/q144/scores/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Wait for repeat144
+        run: python3.12 -B warm_worker.py wait worker repeat144 || { tail -40 worker/stdout.log; exit 1; }
+      - name: Publish scores for repeat144
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-bulk-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/scores/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Wait for q72
+        run: python3.12 -B warm_worker.py wait worker q72 || { tail -40 worker/stdout.log; exit 1; }
+      - name: Publish scores for q72
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-bulk-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Select all three winners once
+        if: matrix.slot == 0
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B payload.py choose worker 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: matrix.slot == 0
+        with:
+          name: decision-bulk
+          path: worker/decision.json
+          retention-days: 1
+          if-no-files-found: error
+      - name: Prepare transferable weight files
+        id: payload
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B payload.py bulk worker ${{ matrix.slot }}
+      - name: Publish weight payload for q144
+        if: steps.payload.outputs.q144 == 'yes'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-bulk-q144-${{ matrix.slot }}
+          path: worker/q144/payload/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+      - name: Publish weight payload for repeat144
+        if: steps.payload.outputs.repeat144 == 'yes'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-bulk-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/payload/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+      - name: Publish weight payload for q72
+        if: steps.payload.outputs.q72 == 'yes'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-bulk-q72-${{ matrix.slot }}
+          path: worker/q72/payload/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+  eager:
+    needs: bulk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        slot: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093f
+        with:
+          name: queue-input
+          path: bundle/
+      - name: Start one worker for three queues
+        shell: bash
+        run: |
+          mkdir -p worker
+          python3.12 -B warm_worker.py work bundle worker ${{ matrix.slot }} q144 repeat144 q72 > worker/stdout.log 2>&1 &
+          echo $! > worker/worker.pid
+      - name: Wait for q144
+        run: python3.12 -B warm_worker.py wait worker q144 || { tail -40 worker/stdout.log; exit 1; }
+      - name: Publish scores for q144
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-eager-q144-${{ matrix.slot }}
+          path: worker/q144/scores/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Wait for repeat144
+        run: python3.12 -B warm_worker.py wait worker repeat144 || { tail -40 worker/stdout.log; exit 1; }
+      - name: Publish scores for repeat144
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-eager-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/scores/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Wait for q72
+        run: python3.12 -B warm_worker.py wait worker q72 || { tail -40 worker/stdout.log; exit 1; }
+      - name: Publish scores for q72
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: scores-eager-q72-${{ matrix.slot }}
+          path: worker/q72/scores/
+          retention-days: 1
+          if-no-files-found: error
+      - name: Prepare transferable weight files
+        id: payload
+        env:
+          OSI_ACTIONS_TOKEN: ${{ github.token }}
+        run: python3.12 -B payload.py eager worker ${{ matrix.slot }}
+      - name: Publish weight payload for q144
+        if: steps.payload.outputs.q144 == 'yes'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-eager-q144-${{ matrix.slot }}
+          path: worker/q144/payload/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+      - name: Publish weight payload for repeat144
+        if: steps.payload.outputs.repeat144 == 'yes'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-eager-repeat144-${{ matrix.slot }}
+          path: worker/repeat144/payload/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
+      - name: Publish weight payload for q72
+        if: steps.payload.outputs.q72 == 'yes'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: weights-eager-q72-${{ matrix.slot }}
+          path: worker/q72/payload/
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
